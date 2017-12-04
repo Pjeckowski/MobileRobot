@@ -31,7 +31,7 @@
 								<option id="de.innot.avreclipse.compiler.option.debug.level.1835381488" name="Generate Debugging Info" superClass="de.innot.avreclipse.compiler.option.debug.level" value="de.innot.avreclipse.compiler.option.debug.level.none" valueType="enumerated"/>
 								<option id="de.innot.avreclipse.compiler.option.optimize.1695469105" name="Optimization Level" superClass="de.innot.avreclipse.compiler.option.optimize" value="de.innot.avreclipse.compiler.optimize.size" valueType="enumerated"/>
 								<option id="de.innot.avreclipse.compiler.option.incpath.1233303366" name="Include Paths (-I)" superClass="de.innot.avreclipse.compiler.option.incpath" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;C:\Users\Patryk\Desktop\Mikro\eclipse_projekty\GIT\libs&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Users\Patryk\Desktop\Mikro\eclipse_projekty\GIT\MobileRobot\libs&quot;"/>
 								</option>
 								<inputType id="de.innot.avreclipse.compiler.winavr.input.1073425923" name="C Source Files" superClass="de.innot.avreclipse.compiler.winavr.input"/>
 							</tool>

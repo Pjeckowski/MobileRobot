@@ -3,13 +3,13 @@ radio_transmitter.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         000007c8  00000000  00000000  00000094  2**1
+  0 .text         0000089c  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         00000038  00800060  000007c8  0000085c  2**0
+  1 .data         00000038  00800060  0000089c  00000930  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .bss          0000001a  00800098  00800098  00000894  2**0
+  2 .bss          0000001a  00800098  00800098  00000968  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  00000894  2**0
+  3 .comment      00000030  00000000  00000000  00000968  2**0
                   CONTENTS, READONLY
 
 Disassembly of section .text:
@@ -26,7 +26,7 @@ Disassembly of section .text:
   20:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
   24:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
   28:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
-  2c:	0c 94 b2 02 	jmp	0x564	; 0x564 <__vector_11>
+  2c:	0c 94 ec 02 	jmp	0x5d8	; 0x5d8 <__vector_11>
   30:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
   34:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
   38:	0c 94 47 00 	jmp	0x8e	; 0x8e <__bad_interrupt>
@@ -49,8 +49,8 @@ Disassembly of section .text:
   60:	10 e0       	ldi	r17, 0x00	; 0
   62:	a0 e6       	ldi	r26, 0x60	; 96
   64:	b0 e0       	ldi	r27, 0x00	; 0
-  66:	e8 ec       	ldi	r30, 0xC8	; 200
-  68:	f7 e0       	ldi	r31, 0x07	; 7
+  66:	ec e9       	ldi	r30, 0x9C	; 156
+  68:	f8 e0       	ldi	r31, 0x08	; 8
   6a:	02 c0       	rjmp	.+4      	; 0x70 <__do_copy_data+0x10>
   6c:	05 90       	lpm	r0, Z+
   6e:	0d 92       	st	X+, r0
@@ -71,8 +71,8 @@ Disassembly of section .text:
   80:	a2 3b       	cpi	r26, 0xB2	; 178
   82:	b2 07       	cpc	r27, r18
   84:	e1 f7       	brne	.-8      	; 0x7e <.do_clear_bss_loop>
-  86:	0e 94 92 03 	call	0x724	; 0x724 <main>
-  8a:	0c 94 e2 03 	jmp	0x7c4	; 0x7c4 <_exit>
+  86:	0e 94 cc 03 	call	0x798	; 0x798 <main>
+  8a:	0c 94 4c 04 	jmp	0x898	; 0x898 <_exit>
 
 0000008e <__bad_interrupt>:
   8e:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -639,314 +639,421 @@ Disassembly of section .text:
  4ee:	0c 94 32 02 	jmp	0x464	; 0x464 <uart_send>
 
 000004f2 <uart_sendValueAsChar>:
- 4f2:	0f 93       	push	r16
- 4f4:	1f 93       	push	r17
- 4f6:	cf 93       	push	r28
- 4f8:	df 93       	push	r29
- 4fa:	1f 92       	push	r1
- 4fc:	cd b7       	in	r28, 0x3d	; 61
- 4fe:	de b7       	in	r29, 0x3e	; 62
- 500:	38 2f       	mov	r19, r24
- 502:	88 23       	and	r24, r24
- 504:	11 f0       	breq	.+4      	; 0x50a <uart_sendValueAsChar+0x18>
- 506:	2a e0       	ldi	r18, 0x0A	; 10
- 508:	08 c0       	rjmp	.+16     	; 0x51a <uart_sendValueAsChar+0x28>
- 50a:	80 e3       	ldi	r24, 0x30	; 48
- 50c:	0f 90       	pop	r0
- 50e:	df 91       	pop	r29
- 510:	cf 91       	pop	r28
- 512:	1f 91       	pop	r17
- 514:	0f 91       	pop	r16
- 516:	0c 94 32 02 	jmp	0x464	; 0x464 <uart_send>
- 51a:	82 2f       	mov	r24, r18
- 51c:	23 17       	cp	r18, r19
- 51e:	30 f4       	brcc	.+12     	; 0x52c <uart_sendValueAsChar+0x3a>
- 520:	88 0f       	add	r24, r24
- 522:	28 2f       	mov	r18, r24
- 524:	22 0f       	add	r18, r18
- 526:	22 0f       	add	r18, r18
- 528:	28 0f       	add	r18, r24
- 52a:	f7 cf       	rjmp	.-18     	; 0x51a <uart_sendValueAsChar+0x28>
- 52c:	6a e0       	ldi	r22, 0x0A	; 10
- 52e:	0e 94 d6 03 	call	0x7ac	; 0x7ac <__udivmodqi4>
- 532:	18 2f       	mov	r17, r24
- 534:	0a e0       	ldi	r16, 0x0A	; 10
- 536:	83 2f       	mov	r24, r19
- 538:	61 2f       	mov	r22, r17
- 53a:	0e 94 d6 03 	call	0x7ac	; 0x7ac <__udivmodqi4>
- 53e:	80 5d       	subi	r24, 0xD0	; 208
- 540:	99 83       	std	Y+1, r25	; 0x01
- 542:	0e 94 32 02 	call	0x464	; 0x464 <uart_send>
- 546:	99 81       	ldd	r25, Y+1	; 0x01
- 548:	39 2f       	mov	r19, r25
- 54a:	81 2f       	mov	r24, r17
- 54c:	60 2f       	mov	r22, r16
- 54e:	0e 94 d6 03 	call	0x7ac	; 0x7ac <__udivmodqi4>
- 552:	18 2f       	mov	r17, r24
- 554:	31 11       	cpse	r19, r1
- 556:	ef cf       	rjmp	.-34     	; 0x536 <uart_sendValueAsChar+0x44>
- 558:	0f 90       	pop	r0
- 55a:	df 91       	pop	r29
- 55c:	cf 91       	pop	r28
- 55e:	1f 91       	pop	r17
- 560:	0f 91       	pop	r16
- 562:	08 95       	ret
+ 4f2:	4f 92       	push	r4
+ 4f4:	5f 92       	push	r5
+ 4f6:	6f 92       	push	r6
+ 4f8:	7f 92       	push	r7
+ 4fa:	8f 92       	push	r8
+ 4fc:	9f 92       	push	r9
+ 4fe:	af 92       	push	r10
+ 500:	bf 92       	push	r11
+ 502:	cf 92       	push	r12
+ 504:	df 92       	push	r13
+ 506:	ef 92       	push	r14
+ 508:	ff 92       	push	r15
+ 50a:	1f 93       	push	r17
+ 50c:	cf 93       	push	r28
+ 50e:	df 93       	push	r29
+ 510:	00 d0       	rcall	.+0      	; 0x512 <uart_sendValueAsChar+0x20>
+ 512:	1f 92       	push	r1
+ 514:	cd b7       	in	r28, 0x3d	; 61
+ 516:	de b7       	in	r29, 0x3e	; 62
+ 518:	6b 01       	movw	r12, r22
+ 51a:	7c 01       	movw	r14, r24
+ 51c:	61 15       	cp	r22, r1
+ 51e:	71 05       	cpc	r23, r1
+ 520:	81 05       	cpc	r24, r1
+ 522:	91 05       	cpc	r25, r1
+ 524:	29 f0       	breq	.+10     	; 0x530 <uart_sendValueAsChar+0x3e>
+ 526:	6a e0       	ldi	r22, 0x0A	; 10
+ 528:	70 e0       	ldi	r23, 0x00	; 0
+ 52a:	80 e0       	ldi	r24, 0x00	; 0
+ 52c:	90 e0       	ldi	r25, 0x00	; 0
+ 52e:	04 c0       	rjmp	.+8      	; 0x538 <uart_sendValueAsChar+0x46>
+ 530:	80 e3       	ldi	r24, 0x30	; 48
+ 532:	0e 94 32 02 	call	0x464	; 0x464 <uart_send>
+ 536:	3b c0       	rjmp	.+118    	; 0x5ae <uart_sendValueAsChar+0xbc>
+ 538:	6c 15       	cp	r22, r12
+ 53a:	7d 05       	cpc	r23, r13
+ 53c:	8e 05       	cpc	r24, r14
+ 53e:	9f 05       	cpc	r25, r15
+ 540:	38 f4       	brcc	.+14     	; 0x550 <uart_sendValueAsChar+0x5e>
+ 542:	aa e0       	ldi	r26, 0x0A	; 10
+ 544:	b0 e0       	ldi	r27, 0x00	; 0
+ 546:	9b 01       	movw	r18, r22
+ 548:	ac 01       	movw	r20, r24
+ 54a:	0e 94 32 04 	call	0x864	; 0x864 <__muluhisi3>
+ 54e:	f4 cf       	rjmp	.-24     	; 0x538 <uart_sendValueAsChar+0x46>
+ 550:	2a e0       	ldi	r18, 0x0A	; 10
+ 552:	30 e0       	ldi	r19, 0x00	; 0
+ 554:	40 e0       	ldi	r20, 0x00	; 0
+ 556:	50 e0       	ldi	r21, 0x00	; 0
+ 558:	0e 94 10 04 	call	0x820	; 0x820 <__udivmodsi4>
+ 55c:	49 01       	movw	r8, r18
+ 55e:	5a 01       	movw	r10, r20
+ 560:	8a e0       	ldi	r24, 0x0A	; 10
+ 562:	48 2e       	mov	r4, r24
+ 564:	51 2c       	mov	r5, r1
+ 566:	61 2c       	mov	r6, r1
+ 568:	71 2c       	mov	r7, r1
+ 56a:	c7 01       	movw	r24, r14
+ 56c:	b6 01       	movw	r22, r12
+ 56e:	a5 01       	movw	r20, r10
+ 570:	94 01       	movw	r18, r8
+ 572:	0e 94 10 04 	call	0x820	; 0x820 <__udivmodsi4>
+ 576:	18 2f       	mov	r17, r24
+ 578:	80 e3       	ldi	r24, 0x30	; 48
+ 57a:	82 0f       	add	r24, r18
+ 57c:	69 83       	std	Y+1, r22	; 0x01
+ 57e:	7a 83       	std	Y+2, r23	; 0x02
+ 580:	9b 83       	std	Y+3, r25	; 0x03
+ 582:	0e 94 32 02 	call	0x464	; 0x464 <uart_send>
+ 586:	69 81       	ldd	r22, Y+1	; 0x01
+ 588:	c6 2e       	mov	r12, r22
+ 58a:	7a 81       	ldd	r23, Y+2	; 0x02
+ 58c:	d7 2e       	mov	r13, r23
+ 58e:	e1 2e       	mov	r14, r17
+ 590:	9b 81       	ldd	r25, Y+3	; 0x03
+ 592:	f9 2e       	mov	r15, r25
+ 594:	c5 01       	movw	r24, r10
+ 596:	b4 01       	movw	r22, r8
+ 598:	a3 01       	movw	r20, r6
+ 59a:	92 01       	movw	r18, r4
+ 59c:	0e 94 10 04 	call	0x820	; 0x820 <__udivmodsi4>
+ 5a0:	49 01       	movw	r8, r18
+ 5a2:	5a 01       	movw	r10, r20
+ 5a4:	c1 14       	cp	r12, r1
+ 5a6:	d1 04       	cpc	r13, r1
+ 5a8:	e1 04       	cpc	r14, r1
+ 5aa:	f1 04       	cpc	r15, r1
+ 5ac:	f1 f6       	brne	.-68     	; 0x56a <uart_sendValueAsChar+0x78>
+ 5ae:	8d e0       	ldi	r24, 0x0D	; 13
+ 5b0:	0f 90       	pop	r0
+ 5b2:	0f 90       	pop	r0
+ 5b4:	0f 90       	pop	r0
+ 5b6:	df 91       	pop	r29
+ 5b8:	cf 91       	pop	r28
+ 5ba:	1f 91       	pop	r17
+ 5bc:	ff 90       	pop	r15
+ 5be:	ef 90       	pop	r14
+ 5c0:	df 90       	pop	r13
+ 5c2:	cf 90       	pop	r12
+ 5c4:	bf 90       	pop	r11
+ 5c6:	af 90       	pop	r10
+ 5c8:	9f 90       	pop	r9
+ 5ca:	8f 90       	pop	r8
+ 5cc:	7f 90       	pop	r7
+ 5ce:	6f 90       	pop	r6
+ 5d0:	5f 90       	pop	r5
+ 5d2:	4f 90       	pop	r4
+ 5d4:	0c 94 32 02 	jmp	0x464	; 0x464 <uart_send>
 
-00000564 <__vector_11>:
- 564:	1f 92       	push	r1
- 566:	0f 92       	push	r0
- 568:	0f b6       	in	r0, 0x3f	; 63
- 56a:	0f 92       	push	r0
- 56c:	11 24       	eor	r1, r1
- 56e:	2f 93       	push	r18
- 570:	8f 93       	push	r24
- 572:	9f 93       	push	r25
- 574:	80 ee       	ldi	r24, 0xE0	; 224
- 576:	82 bf       	out	0x32, r24	; 50
- 578:	80 91 a7 00 	lds	r24, 0x00A7
- 57c:	8f 5f       	subi	r24, 0xFF	; 255
- 57e:	80 93 a7 00 	sts	0x00A7, r24
- 582:	80 91 98 00 	lds	r24, 0x0098
- 586:	90 91 99 00 	lds	r25, 0x0099
- 58a:	01 96       	adiw	r24, 0x01	; 1
- 58c:	90 93 99 00 	sts	0x0099, r25
- 590:	80 93 98 00 	sts	0x0098, r24
- 594:	80 91 98 00 	lds	r24, 0x0098
- 598:	90 91 99 00 	lds	r25, 0x0099
- 59c:	87 3e       	cpi	r24, 0xE7	; 231
- 59e:	93 40       	sbci	r25, 0x03	; 3
- 5a0:	39 f4       	brne	.+14     	; 0x5b0 <__vector_11+0x4c>
- 5a2:	10 92 99 00 	sts	0x0099, r1
- 5a6:	10 92 98 00 	sts	0x0098, r1
- 5aa:	81 e0       	ldi	r24, 0x01	; 1
- 5ac:	80 93 62 00 	sts	0x0062, r24
- 5b0:	9f 91       	pop	r25
- 5b2:	8f 91       	pop	r24
- 5b4:	2f 91       	pop	r18
- 5b6:	0f 90       	pop	r0
- 5b8:	0f be       	out	0x3f, r0	; 63
- 5ba:	0f 90       	pop	r0
- 5bc:	1f 90       	pop	r1
- 5be:	18 95       	reti
+000005d8 <__vector_11>:
+ 5d8:	1f 92       	push	r1
+ 5da:	0f 92       	push	r0
+ 5dc:	0f b6       	in	r0, 0x3f	; 63
+ 5de:	0f 92       	push	r0
+ 5e0:	11 24       	eor	r1, r1
+ 5e2:	2f 93       	push	r18
+ 5e4:	8f 93       	push	r24
+ 5e6:	9f 93       	push	r25
+ 5e8:	80 ee       	ldi	r24, 0xE0	; 224
+ 5ea:	82 bf       	out	0x32, r24	; 50
+ 5ec:	80 91 a7 00 	lds	r24, 0x00A7
+ 5f0:	8f 5f       	subi	r24, 0xFF	; 255
+ 5f2:	80 93 a7 00 	sts	0x00A7, r24
+ 5f6:	80 91 98 00 	lds	r24, 0x0098
+ 5fa:	90 91 99 00 	lds	r25, 0x0099
+ 5fe:	01 96       	adiw	r24, 0x01	; 1
+ 600:	90 93 99 00 	sts	0x0099, r25
+ 604:	80 93 98 00 	sts	0x0098, r24
+ 608:	80 91 98 00 	lds	r24, 0x0098
+ 60c:	90 91 99 00 	lds	r25, 0x0099
+ 610:	87 3e       	cpi	r24, 0xE7	; 231
+ 612:	93 40       	sbci	r25, 0x03	; 3
+ 614:	39 f4       	brne	.+14     	; 0x624 <__vector_11+0x4c>
+ 616:	10 92 99 00 	sts	0x0099, r1
+ 61a:	10 92 98 00 	sts	0x0098, r1
+ 61e:	81 e0       	ldi	r24, 0x01	; 1
+ 620:	80 93 62 00 	sts	0x0062, r24
+ 624:	9f 91       	pop	r25
+ 626:	8f 91       	pop	r24
+ 628:	2f 91       	pop	r18
+ 62a:	0f 90       	pop	r0
+ 62c:	0f be       	out	0x3f, r0	; 63
+ 62e:	0f 90       	pop	r0
+ 630:	1f 90       	pop	r1
+ 632:	18 95       	reti
 
-000005c0 <errorInform>:
- 5c0:	84 e6       	ldi	r24, 0x64	; 100
- 5c2:	90 e0       	ldi	r25, 0x00	; 0
- 5c4:	90 93 61 00 	sts	0x0061, r25
- 5c8:	80 93 60 00 	sts	0x0060, r24
- 5cc:	0c 94 59 02 	jmp	0x4b2	; 0x4b2 <uart_sendString>
+00000634 <errorInform>:
+ 634:	84 e6       	ldi	r24, 0x64	; 100
+ 636:	90 e0       	ldi	r25, 0x00	; 0
+ 638:	90 93 61 00 	sts	0x0061, r25
+ 63c:	80 93 60 00 	sts	0x0060, r24
+ 640:	0c 94 59 02 	jmp	0x4b2	; 0x4b2 <uart_sendString>
 
-000005d0 <radioTra>:
- 5d0:	80 91 63 00 	lds	r24, 0x0063
- 5d4:	83 30       	cpi	r24, 0x03	; 3
- 5d6:	79 f0       	breq	.+30     	; 0x5f6 <radioTra+0x26>
- 5d8:	38 f4       	brcc	.+14     	; 0x5e8 <radioTra+0x18>
- 5da:	81 30       	cpi	r24, 0x01	; 1
- 5dc:	09 f4       	brne	.+2      	; 0x5e0 <radioTra+0x10>
- 5de:	98 c0       	rjmp	.+304    	; 0x710 <radioTra+0x140>
- 5e0:	82 30       	cpi	r24, 0x02	; 2
- 5e2:	09 f4       	brne	.+2      	; 0x5e6 <radioTra+0x16>
- 5e4:	58 c0       	rjmp	.+176    	; 0x696 <radioTra+0xc6>
- 5e6:	08 95       	ret
- 5e8:	85 30       	cpi	r24, 0x05	; 5
- 5ea:	79 f1       	breq	.+94     	; 0x64a <radioTra+0x7a>
- 5ec:	f8 f0       	brcs	.+62     	; 0x62c <radioTra+0x5c>
- 5ee:	86 30       	cpi	r24, 0x06	; 6
- 5f0:	09 f4       	brne	.+2      	; 0x5f4 <radioTra+0x24>
- 5f2:	5f c0       	rjmp	.+190    	; 0x6b2 <radioTra+0xe2>
- 5f4:	08 95       	ret
- 5f6:	80 91 62 00 	lds	r24, 0x0062
- 5fa:	81 30       	cpi	r24, 0x01	; 1
- 5fc:	09 f0       	breq	.+2      	; 0x600 <radioTra+0x30>
- 5fe:	91 c0       	rjmp	.+290    	; 0x722 <radioTra+0x152>
- 600:	80 91 a2 00 	lds	r24, 0x00A2
- 604:	8f 5f       	subi	r24, 0xFF	; 255
- 606:	81 38       	cpi	r24, 0x81	; 129
- 608:	09 f4       	brne	.+2      	; 0x60c <radioTra+0x3c>
- 60a:	88 e7       	ldi	r24, 0x78	; 120
- 60c:	80 93 a2 00 	sts	0x00A2, r24
- 610:	61 e0       	ldi	r22, 0x01	; 1
- 612:	82 ea       	ldi	r24, 0xA2	; 162
- 614:	90 e0       	ldi	r25, 0x00	; 0
- 616:	0e 94 dc 01 	call	0x3b8	; 0x3b8 <radio_preparePayload>
- 61a:	80 91 a7 00 	lds	r24, 0x00A7
- 61e:	86 5f       	subi	r24, 0xF6	; 246
- 620:	80 93 9a 00 	sts	0x009A, r24
- 624:	10 92 62 00 	sts	0x0062, r1
- 628:	84 e0       	ldi	r24, 0x04	; 4
- 62a:	79 c0       	rjmp	.+242    	; 0x71e <radioTra+0x14e>
- 62c:	90 91 a7 00 	lds	r25, 0x00A7
- 630:	80 91 9a 00 	lds	r24, 0x009A
- 634:	98 13       	cpse	r25, r24
- 636:	75 c0       	rjmp	.+234    	; 0x722 <radioTra+0x152>
- 638:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <radio_transmit>
- 63c:	80 91 a7 00 	lds	r24, 0x00A7
- 640:	86 5f       	subi	r24, 0xF6	; 246
- 642:	80 93 9a 00 	sts	0x009A, r24
- 646:	85 e0       	ldi	r24, 0x05	; 5
- 648:	6a c0       	rjmp	.+212    	; 0x71e <radioTra+0x14e>
- 64a:	c8 9b       	sbis	0x19, 0	; 25
- 64c:	06 c0       	rjmp	.+12     	; 0x65a <radioTra+0x8a>
- 64e:	90 91 a7 00 	lds	r25, 0x00A7
- 652:	80 91 9a 00 	lds	r24, 0x009A
- 656:	98 13       	cpse	r25, r24
- 658:	64 c0       	rjmp	.+200    	; 0x722 <radioTra+0x152>
- 65a:	80 e8       	ldi	r24, 0x80	; 128
- 65c:	90 e0       	ldi	r25, 0x00	; 0
- 65e:	0e 94 59 02 	call	0x4b2	; 0x4b2 <uart_sendString>
- 662:	87 e0       	ldi	r24, 0x07	; 7
- 664:	0e 94 67 00 	call	0xce	; 0xce <get_reg>
- 668:	0e 94 3a 02 	call	0x474	; 0x474 <uart_sendByteAsChar>
- 66c:	87 e0       	ldi	r24, 0x07	; 7
- 66e:	0e 94 67 00 	call	0xce	; 0xce <get_reg>
- 672:	8e 32       	cpi	r24, 0x2E	; 46
- 674:	09 f0       	breq	.+2      	; 0x678 <radioTra+0xa8>
- 676:	52 c0       	rjmp	.+164    	; 0x71c <radioTra+0x14c>
- 678:	80 91 a2 00 	lds	r24, 0x00A2
- 67c:	87 ff       	sbrs	r24, 7
- 67e:	4e c0       	rjmp	.+156    	; 0x71c <radioTra+0x14c>
- 680:	0e 94 83 01 	call	0x306	; 0x306 <reset_radio>
- 684:	0e 94 9c 01 	call	0x338	; 0x338 <radio_switchReceiver>
- 688:	80 91 a7 00 	lds	r24, 0x00A7
- 68c:	82 5e       	subi	r24, 0xE2	; 226
- 68e:	80 93 9a 00 	sts	0x009A, r24
- 692:	82 e0       	ldi	r24, 0x02	; 2
- 694:	44 c0       	rjmp	.+136    	; 0x71e <radioTra+0x14e>
- 696:	90 91 a7 00 	lds	r25, 0x00A7
- 69a:	80 91 9a 00 	lds	r24, 0x009A
- 69e:	98 13       	cpse	r25, r24
- 6a0:	40 c0       	rjmp	.+128    	; 0x722 <radioTra+0x152>
- 6a2:	c3 9a       	sbi	0x18, 3	; 24
- 6a4:	80 91 a7 00 	lds	r24, 0x00A7
- 6a8:	82 5e       	subi	r24, 0xE2	; 226
- 6aa:	80 93 9a 00 	sts	0x009A, r24
- 6ae:	86 e0       	ldi	r24, 0x06	; 6
- 6b0:	36 c0       	rjmp	.+108    	; 0x71e <radioTra+0x14e>
- 6b2:	c8 9b       	sbis	0x19, 0	; 25
- 6b4:	06 c0       	rjmp	.+12     	; 0x6c2 <radioTra+0xf2>
- 6b6:	90 91 a7 00 	lds	r25, 0x00A7
- 6ba:	80 91 9a 00 	lds	r24, 0x009A
- 6be:	98 13       	cpse	r25, r24
- 6c0:	30 c0       	rjmp	.+96     	; 0x722 <radioTra+0x152>
- 6c2:	c3 98       	cbi	0x18, 3	; 24
- 6c4:	8e e8       	ldi	r24, 0x8E	; 142
- 6c6:	90 e0       	ldi	r25, 0x00	; 0
- 6c8:	0e 94 59 02 	call	0x4b2	; 0x4b2 <uart_sendString>
- 6cc:	87 e0       	ldi	r24, 0x07	; 7
- 6ce:	0e 94 67 00 	call	0xce	; 0xce <get_reg>
- 6d2:	0e 94 3a 02 	call	0x474	; 0x474 <uart_sendByteAsChar>
+00000644 <radioTra>:
+ 644:	80 91 63 00 	lds	r24, 0x0063
+ 648:	83 30       	cpi	r24, 0x03	; 3
+ 64a:	79 f0       	breq	.+30     	; 0x66a <radioTra+0x26>
+ 64c:	38 f4       	brcc	.+14     	; 0x65c <radioTra+0x18>
+ 64e:	81 30       	cpi	r24, 0x01	; 1
+ 650:	09 f4       	brne	.+2      	; 0x654 <radioTra+0x10>
+ 652:	98 c0       	rjmp	.+304    	; 0x784 <radioTra+0x140>
+ 654:	82 30       	cpi	r24, 0x02	; 2
+ 656:	09 f4       	brne	.+2      	; 0x65a <radioTra+0x16>
+ 658:	58 c0       	rjmp	.+176    	; 0x70a <radioTra+0xc6>
+ 65a:	08 95       	ret
+ 65c:	85 30       	cpi	r24, 0x05	; 5
+ 65e:	79 f1       	breq	.+94     	; 0x6be <radioTra+0x7a>
+ 660:	f8 f0       	brcs	.+62     	; 0x6a0 <radioTra+0x5c>
+ 662:	86 30       	cpi	r24, 0x06	; 6
+ 664:	09 f4       	brne	.+2      	; 0x668 <radioTra+0x24>
+ 666:	5f c0       	rjmp	.+190    	; 0x726 <radioTra+0xe2>
+ 668:	08 95       	ret
+ 66a:	80 91 62 00 	lds	r24, 0x0062
+ 66e:	81 30       	cpi	r24, 0x01	; 1
+ 670:	09 f0       	breq	.+2      	; 0x674 <radioTra+0x30>
+ 672:	91 c0       	rjmp	.+290    	; 0x796 <radioTra+0x152>
+ 674:	80 91 a2 00 	lds	r24, 0x00A2
+ 678:	8f 5f       	subi	r24, 0xFF	; 255
+ 67a:	81 38       	cpi	r24, 0x81	; 129
+ 67c:	09 f4       	brne	.+2      	; 0x680 <radioTra+0x3c>
+ 67e:	88 e7       	ldi	r24, 0x78	; 120
+ 680:	80 93 a2 00 	sts	0x00A2, r24
+ 684:	61 e0       	ldi	r22, 0x01	; 1
+ 686:	82 ea       	ldi	r24, 0xA2	; 162
+ 688:	90 e0       	ldi	r25, 0x00	; 0
+ 68a:	0e 94 dc 01 	call	0x3b8	; 0x3b8 <radio_preparePayload>
+ 68e:	80 91 a7 00 	lds	r24, 0x00A7
+ 692:	86 5f       	subi	r24, 0xF6	; 246
+ 694:	80 93 9a 00 	sts	0x009A, r24
+ 698:	10 92 62 00 	sts	0x0062, r1
+ 69c:	84 e0       	ldi	r24, 0x04	; 4
+ 69e:	79 c0       	rjmp	.+242    	; 0x792 <radioTra+0x14e>
+ 6a0:	90 91 a7 00 	lds	r25, 0x00A7
+ 6a4:	80 91 9a 00 	lds	r24, 0x009A
+ 6a8:	98 13       	cpse	r25, r24
+ 6aa:	75 c0       	rjmp	.+234    	; 0x796 <radioTra+0x152>
+ 6ac:	0e 94 fb 01 	call	0x3f6	; 0x3f6 <radio_transmit>
+ 6b0:	80 91 a7 00 	lds	r24, 0x00A7
+ 6b4:	86 5f       	subi	r24, 0xF6	; 246
+ 6b6:	80 93 9a 00 	sts	0x009A, r24
+ 6ba:	85 e0       	ldi	r24, 0x05	; 5
+ 6bc:	6a c0       	rjmp	.+212    	; 0x792 <radioTra+0x14e>
+ 6be:	c8 9b       	sbis	0x19, 0	; 25
+ 6c0:	06 c0       	rjmp	.+12     	; 0x6ce <radioTra+0x8a>
+ 6c2:	90 91 a7 00 	lds	r25, 0x00A7
+ 6c6:	80 91 9a 00 	lds	r24, 0x009A
+ 6ca:	98 13       	cpse	r25, r24
+ 6cc:	64 c0       	rjmp	.+200    	; 0x796 <radioTra+0x152>
+ 6ce:	80 e8       	ldi	r24, 0x80	; 128
+ 6d0:	90 e0       	ldi	r25, 0x00	; 0
+ 6d2:	0e 94 59 02 	call	0x4b2	; 0x4b2 <uart_sendString>
  6d6:	87 e0       	ldi	r24, 0x07	; 7
  6d8:	0e 94 67 00 	call	0xce	; 0xce <get_reg>
- 6dc:	80 34       	cpi	r24, 0x40	; 64
- 6de:	59 f4       	brne	.+22     	; 0x6f6 <radioTra+0x126>
+ 6dc:	0e 94 3a 02 	call	0x474	; 0x474 <uart_sendByteAsChar>
  6e0:	87 e0       	ldi	r24, 0x07	; 7
  6e2:	0e 94 67 00 	call	0xce	; 0xce <get_reg>
- 6e6:	8e 30       	cpi	r24, 0x0E	; 14
- 6e8:	41 f0       	breq	.+16     	; 0x6fa <radioTra+0x12a>
- 6ea:	61 e0       	ldi	r22, 0x01	; 1
- 6ec:	8d ea       	ldi	r24, 0xAD	; 173
- 6ee:	90 e0       	ldi	r25, 0x00	; 0
- 6f0:	0e 94 04 02 	call	0x408	; 0x408 <radio_receive>
- 6f4:	f5 cf       	rjmp	.-22     	; 0x6e0 <radioTra+0x110>
- 6f6:	0e 94 e0 02 	call	0x5c0	; 0x5c0 <errorInform>
- 6fa:	0e 94 bc 01 	call	0x378	; 0x378 <radio_switchTransmiter>
- 6fe:	81 e0       	ldi	r24, 0x01	; 1
- 700:	80 93 63 00 	sts	0x0063, r24
- 704:	80 91 a7 00 	lds	r24, 0x00A7
- 708:	86 5f       	subi	r24, 0xF6	; 246
- 70a:	80 93 9a 00 	sts	0x009A, r24
- 70e:	08 95       	ret
- 710:	90 91 a7 00 	lds	r25, 0x00A7
- 714:	80 91 9a 00 	lds	r24, 0x009A
- 718:	98 13       	cpse	r25, r24
- 71a:	03 c0       	rjmp	.+6      	; 0x722 <radioTra+0x152>
- 71c:	83 e0       	ldi	r24, 0x03	; 3
- 71e:	80 93 63 00 	sts	0x0063, r24
- 722:	08 95       	ret
+ 6e6:	8e 32       	cpi	r24, 0x2E	; 46
+ 6e8:	09 f0       	breq	.+2      	; 0x6ec <radioTra+0xa8>
+ 6ea:	52 c0       	rjmp	.+164    	; 0x790 <radioTra+0x14c>
+ 6ec:	80 91 a2 00 	lds	r24, 0x00A2
+ 6f0:	87 ff       	sbrs	r24, 7
+ 6f2:	4e c0       	rjmp	.+156    	; 0x790 <radioTra+0x14c>
+ 6f4:	0e 94 83 01 	call	0x306	; 0x306 <reset_radio>
+ 6f8:	0e 94 9c 01 	call	0x338	; 0x338 <radio_switchReceiver>
+ 6fc:	80 91 a7 00 	lds	r24, 0x00A7
+ 700:	82 5e       	subi	r24, 0xE2	; 226
+ 702:	80 93 9a 00 	sts	0x009A, r24
+ 706:	82 e0       	ldi	r24, 0x02	; 2
+ 708:	44 c0       	rjmp	.+136    	; 0x792 <radioTra+0x14e>
+ 70a:	90 91 a7 00 	lds	r25, 0x00A7
+ 70e:	80 91 9a 00 	lds	r24, 0x009A
+ 712:	98 13       	cpse	r25, r24
+ 714:	40 c0       	rjmp	.+128    	; 0x796 <radioTra+0x152>
+ 716:	c3 9a       	sbi	0x18, 3	; 24
+ 718:	80 91 a7 00 	lds	r24, 0x00A7
+ 71c:	82 5e       	subi	r24, 0xE2	; 226
+ 71e:	80 93 9a 00 	sts	0x009A, r24
+ 722:	86 e0       	ldi	r24, 0x06	; 6
+ 724:	36 c0       	rjmp	.+108    	; 0x792 <radioTra+0x14e>
+ 726:	c8 9b       	sbis	0x19, 0	; 25
+ 728:	06 c0       	rjmp	.+12     	; 0x736 <radioTra+0xf2>
+ 72a:	90 91 a7 00 	lds	r25, 0x00A7
+ 72e:	80 91 9a 00 	lds	r24, 0x009A
+ 732:	98 13       	cpse	r25, r24
+ 734:	30 c0       	rjmp	.+96     	; 0x796 <radioTra+0x152>
+ 736:	c3 98       	cbi	0x18, 3	; 24
+ 738:	8e e8       	ldi	r24, 0x8E	; 142
+ 73a:	90 e0       	ldi	r25, 0x00	; 0
+ 73c:	0e 94 59 02 	call	0x4b2	; 0x4b2 <uart_sendString>
+ 740:	87 e0       	ldi	r24, 0x07	; 7
+ 742:	0e 94 67 00 	call	0xce	; 0xce <get_reg>
+ 746:	0e 94 3a 02 	call	0x474	; 0x474 <uart_sendByteAsChar>
+ 74a:	87 e0       	ldi	r24, 0x07	; 7
+ 74c:	0e 94 67 00 	call	0xce	; 0xce <get_reg>
+ 750:	80 34       	cpi	r24, 0x40	; 64
+ 752:	59 f4       	brne	.+22     	; 0x76a <radioTra+0x126>
+ 754:	87 e0       	ldi	r24, 0x07	; 7
+ 756:	0e 94 67 00 	call	0xce	; 0xce <get_reg>
+ 75a:	8e 30       	cpi	r24, 0x0E	; 14
+ 75c:	41 f0       	breq	.+16     	; 0x76e <radioTra+0x12a>
+ 75e:	61 e0       	ldi	r22, 0x01	; 1
+ 760:	8d ea       	ldi	r24, 0xAD	; 173
+ 762:	90 e0       	ldi	r25, 0x00	; 0
+ 764:	0e 94 04 02 	call	0x408	; 0x408 <radio_receive>
+ 768:	f5 cf       	rjmp	.-22     	; 0x754 <radioTra+0x110>
+ 76a:	0e 94 1a 03 	call	0x634	; 0x634 <errorInform>
+ 76e:	0e 94 bc 01 	call	0x378	; 0x378 <radio_switchTransmiter>
+ 772:	81 e0       	ldi	r24, 0x01	; 1
+ 774:	80 93 63 00 	sts	0x0063, r24
+ 778:	80 91 a7 00 	lds	r24, 0x00A7
+ 77c:	86 5f       	subi	r24, 0xF6	; 246
+ 77e:	80 93 9a 00 	sts	0x009A, r24
+ 782:	08 95       	ret
+ 784:	90 91 a7 00 	lds	r25, 0x00A7
+ 788:	80 91 9a 00 	lds	r24, 0x009A
+ 78c:	98 13       	cpse	r25, r24
+ 78e:	03 c0       	rjmp	.+6      	; 0x796 <radioTra+0x152>
+ 790:	83 e0       	ldi	r24, 0x03	; 3
+ 792:	80 93 63 00 	sts	0x0063, r24
+ 796:	08 95       	ret
 
-00000724 <main>:
- 724:	80 e4       	ldi	r24, 0x40	; 64
- 726:	81 bb       	out	0x11, r24	; 17
- 728:	1a ba       	out	0x1a, r1	; 26
- 72a:	81 e0       	ldi	r24, 0x01	; 1
- 72c:	8b bb       	out	0x1b, r24	; 27
- 72e:	83 b7       	in	r24, 0x33	; 51
- 730:	84 60       	ori	r24, 0x04	; 4
- 732:	83 bf       	out	0x33, r24	; 51
- 734:	89 b7       	in	r24, 0x39	; 57
- 736:	81 60       	ori	r24, 0x01	; 1
- 738:	89 bf       	out	0x39, r24	; 57
- 73a:	78 94       	sei
- 73c:	2f ef       	ldi	r18, 0xFF	; 255
- 73e:	8d e3       	ldi	r24, 0x3D	; 61
- 740:	99 e4       	ldi	r25, 0x49	; 73
- 742:	21 50       	subi	r18, 0x01	; 1
- 744:	80 40       	sbci	r24, 0x00	; 0
- 746:	90 40       	sbci	r25, 0x00	; 0
- 748:	e1 f7       	brne	.-8      	; 0x742 <main+0x1e>
- 74a:	00 c0       	rjmp	.+0      	; 0x74c <main+0x28>
- 74c:	00 00       	nop
- 74e:	60 e0       	ldi	r22, 0x00	; 0
- 750:	81 e0       	ldi	r24, 0x01	; 1
- 752:	0e 94 49 00 	call	0x92	; 0x92 <init_SPI>
- 756:	40 e0       	ldi	r20, 0x00	; 0
- 758:	60 e0       	ldi	r22, 0x00	; 0
- 75a:	80 e0       	ldi	r24, 0x00	; 0
- 75c:	0e 94 c8 00 	call	0x190	; 0x190 <init_radio>
- 760:	87 e0       	ldi	r24, 0x07	; 7
- 762:	0e 94 67 00 	call	0xce	; 0xce <get_reg>
- 766:	8e 30       	cpi	r24, 0x0E	; 14
- 768:	11 f4       	brne	.+4      	; 0x76e <main+0x4a>
- 76a:	80 e4       	ldi	r24, 0x40	; 64
- 76c:	82 bb       	out	0x12, r24	; 18
- 76e:	2f ef       	ldi	r18, 0xFF	; 255
- 770:	81 e1       	ldi	r24, 0x11	; 17
- 772:	9a e7       	ldi	r25, 0x7A	; 122
- 774:	21 50       	subi	r18, 0x01	; 1
- 776:	80 40       	sbci	r24, 0x00	; 0
- 778:	90 40       	sbci	r25, 0x00	; 0
- 77a:	e1 f7       	brne	.-8      	; 0x774 <main+0x50>
- 77c:	00 c0       	rjmp	.+0      	; 0x77e <main+0x5a>
- 77e:	00 00       	nop
- 780:	12 ba       	out	0x12, r1	; 18
- 782:	88 e7       	ldi	r24, 0x78	; 120
- 784:	80 93 a2 00 	sts	0x00A2, r24
- 788:	0e 94 28 02 	call	0x450	; 0x450 <uart_init>
- 78c:	0e 94 e8 02 	call	0x5d0	; 0x5d0 <radioTra>
- 790:	fd cf       	rjmp	.-6      	; 0x78c <main+0x68>
+00000798 <main>:
+ 798:	80 e4       	ldi	r24, 0x40	; 64
+ 79a:	81 bb       	out	0x11, r24	; 17
+ 79c:	1a ba       	out	0x1a, r1	; 26
+ 79e:	81 e0       	ldi	r24, 0x01	; 1
+ 7a0:	8b bb       	out	0x1b, r24	; 27
+ 7a2:	83 b7       	in	r24, 0x33	; 51
+ 7a4:	84 60       	ori	r24, 0x04	; 4
+ 7a6:	83 bf       	out	0x33, r24	; 51
+ 7a8:	89 b7       	in	r24, 0x39	; 57
+ 7aa:	81 60       	ori	r24, 0x01	; 1
+ 7ac:	89 bf       	out	0x39, r24	; 57
+ 7ae:	78 94       	sei
+ 7b0:	2f ef       	ldi	r18, 0xFF	; 255
+ 7b2:	8d e3       	ldi	r24, 0x3D	; 61
+ 7b4:	99 e4       	ldi	r25, 0x49	; 73
+ 7b6:	21 50       	subi	r18, 0x01	; 1
+ 7b8:	80 40       	sbci	r24, 0x00	; 0
+ 7ba:	90 40       	sbci	r25, 0x00	; 0
+ 7bc:	e1 f7       	brne	.-8      	; 0x7b6 <main+0x1e>
+ 7be:	00 c0       	rjmp	.+0      	; 0x7c0 <main+0x28>
+ 7c0:	00 00       	nop
+ 7c2:	60 e0       	ldi	r22, 0x00	; 0
+ 7c4:	81 e0       	ldi	r24, 0x01	; 1
+ 7c6:	0e 94 49 00 	call	0x92	; 0x92 <init_SPI>
+ 7ca:	40 e0       	ldi	r20, 0x00	; 0
+ 7cc:	60 e0       	ldi	r22, 0x00	; 0
+ 7ce:	80 e0       	ldi	r24, 0x00	; 0
+ 7d0:	0e 94 c8 00 	call	0x190	; 0x190 <init_radio>
+ 7d4:	87 e0       	ldi	r24, 0x07	; 7
+ 7d6:	0e 94 67 00 	call	0xce	; 0xce <get_reg>
+ 7da:	8e 30       	cpi	r24, 0x0E	; 14
+ 7dc:	11 f4       	brne	.+4      	; 0x7e2 <main+0x4a>
+ 7de:	80 e4       	ldi	r24, 0x40	; 64
+ 7e0:	82 bb       	out	0x12, r24	; 18
+ 7e2:	2f ef       	ldi	r18, 0xFF	; 255
+ 7e4:	81 e1       	ldi	r24, 0x11	; 17
+ 7e6:	9a e7       	ldi	r25, 0x7A	; 122
+ 7e8:	21 50       	subi	r18, 0x01	; 1
+ 7ea:	80 40       	sbci	r24, 0x00	; 0
+ 7ec:	90 40       	sbci	r25, 0x00	; 0
+ 7ee:	e1 f7       	brne	.-8      	; 0x7e8 <main+0x50>
+ 7f0:	00 c0       	rjmp	.+0      	; 0x7f2 <main+0x5a>
+ 7f2:	00 00       	nop
+ 7f4:	12 ba       	out	0x12, r1	; 18
+ 7f6:	88 e7       	ldi	r24, 0x78	; 120
+ 7f8:	80 93 a2 00 	sts	0x00A2, r24
+ 7fc:	0e 94 28 02 	call	0x450	; 0x450 <uart_init>
+ 800:	0e 94 22 03 	call	0x644	; 0x644 <radioTra>
+ 804:	fd cf       	rjmp	.-6      	; 0x800 <main+0x68>
 
-00000792 <dataWorkout>:
- 792:	08 95       	ret
+00000806 <dataWorkout>:
+ 806:	08 95       	ret
 
-00000794 <dataWorkout1>:
- 794:	8d e8       	ldi	r24, 0x8D	; 141
- 796:	90 e0       	ldi	r25, 0x00	; 0
- 798:	90 93 61 00 	sts	0x0061, r25
- 79c:	80 93 60 00 	sts	0x0060, r24
- 7a0:	0e 94 59 02 	call	0x4b2	; 0x4b2 <uart_sendString>
- 7a4:	80 91 ad 00 	lds	r24, 0x00AD
- 7a8:	0c 94 3a 02 	jmp	0x474	; 0x474 <uart_sendByteAsChar>
+00000808 <dataWorkout1>:
+ 808:	8d e8       	ldi	r24, 0x8D	; 141
+ 80a:	90 e0       	ldi	r25, 0x00	; 0
+ 80c:	90 93 61 00 	sts	0x0061, r25
+ 810:	80 93 60 00 	sts	0x0060, r24
+ 814:	0e 94 59 02 	call	0x4b2	; 0x4b2 <uart_sendString>
+ 818:	80 91 ad 00 	lds	r24, 0x00AD
+ 81c:	0c 94 3a 02 	jmp	0x474	; 0x474 <uart_sendByteAsChar>
 
-000007ac <__udivmodqi4>:
- 7ac:	99 1b       	sub	r25, r25
- 7ae:	79 e0       	ldi	r23, 0x09	; 9
- 7b0:	04 c0       	rjmp	.+8      	; 0x7ba <__udivmodqi4_ep>
+00000820 <__udivmodsi4>:
+ 820:	a1 e2       	ldi	r26, 0x21	; 33
+ 822:	1a 2e       	mov	r1, r26
+ 824:	aa 1b       	sub	r26, r26
+ 826:	bb 1b       	sub	r27, r27
+ 828:	fd 01       	movw	r30, r26
+ 82a:	0d c0       	rjmp	.+26     	; 0x846 <__udivmodsi4_ep>
 
-000007b2 <__udivmodqi4_loop>:
- 7b2:	99 1f       	adc	r25, r25
- 7b4:	96 17       	cp	r25, r22
- 7b6:	08 f0       	brcs	.+2      	; 0x7ba <__udivmodqi4_ep>
- 7b8:	96 1b       	sub	r25, r22
+0000082c <__udivmodsi4_loop>:
+ 82c:	aa 1f       	adc	r26, r26
+ 82e:	bb 1f       	adc	r27, r27
+ 830:	ee 1f       	adc	r30, r30
+ 832:	ff 1f       	adc	r31, r31
+ 834:	a2 17       	cp	r26, r18
+ 836:	b3 07       	cpc	r27, r19
+ 838:	e4 07       	cpc	r30, r20
+ 83a:	f5 07       	cpc	r31, r21
+ 83c:	20 f0       	brcs	.+8      	; 0x846 <__udivmodsi4_ep>
+ 83e:	a2 1b       	sub	r26, r18
+ 840:	b3 0b       	sbc	r27, r19
+ 842:	e4 0b       	sbc	r30, r20
+ 844:	f5 0b       	sbc	r31, r21
 
-000007ba <__udivmodqi4_ep>:
- 7ba:	88 1f       	adc	r24, r24
- 7bc:	7a 95       	dec	r23
- 7be:	c9 f7       	brne	.-14     	; 0x7b2 <__udivmodqi4_loop>
- 7c0:	80 95       	com	r24
- 7c2:	08 95       	ret
+00000846 <__udivmodsi4_ep>:
+ 846:	66 1f       	adc	r22, r22
+ 848:	77 1f       	adc	r23, r23
+ 84a:	88 1f       	adc	r24, r24
+ 84c:	99 1f       	adc	r25, r25
+ 84e:	1a 94       	dec	r1
+ 850:	69 f7       	brne	.-38     	; 0x82c <__udivmodsi4_loop>
+ 852:	60 95       	com	r22
+ 854:	70 95       	com	r23
+ 856:	80 95       	com	r24
+ 858:	90 95       	com	r25
+ 85a:	9b 01       	movw	r18, r22
+ 85c:	ac 01       	movw	r20, r24
+ 85e:	bd 01       	movw	r22, r26
+ 860:	cf 01       	movw	r24, r30
+ 862:	08 95       	ret
 
-000007c4 <_exit>:
- 7c4:	f8 94       	cli
+00000864 <__muluhisi3>:
+ 864:	0e 94 3d 04 	call	0x87a	; 0x87a <__umulhisi3>
+ 868:	a5 9f       	mul	r26, r21
+ 86a:	90 0d       	add	r25, r0
+ 86c:	b4 9f       	mul	r27, r20
+ 86e:	90 0d       	add	r25, r0
+ 870:	a4 9f       	mul	r26, r20
+ 872:	80 0d       	add	r24, r0
+ 874:	91 1d       	adc	r25, r1
+ 876:	11 24       	eor	r1, r1
+ 878:	08 95       	ret
 
-000007c6 <__stop_program>:
- 7c6:	ff cf       	rjmp	.-2      	; 0x7c6 <__stop_program>
+0000087a <__umulhisi3>:
+ 87a:	a2 9f       	mul	r26, r18
+ 87c:	b0 01       	movw	r22, r0
+ 87e:	b3 9f       	mul	r27, r19
+ 880:	c0 01       	movw	r24, r0
+ 882:	a3 9f       	mul	r26, r19
+ 884:	70 0d       	add	r23, r0
+ 886:	81 1d       	adc	r24, r1
+ 888:	11 24       	eor	r1, r1
+ 88a:	91 1d       	adc	r25, r1
+ 88c:	b2 9f       	mul	r27, r18
+ 88e:	70 0d       	add	r23, r0
+ 890:	81 1d       	adc	r24, r1
+ 892:	11 24       	eor	r1, r1
+ 894:	91 1d       	adc	r25, r1
+ 896:	08 95       	ret
+
+00000898 <_exit>:
+ 898:	f8 94       	cli
+
+0000089a <__stop_program>:
+ 89a:	ff cf       	rjmp	.-2      	; 0x89a <__stop_program>

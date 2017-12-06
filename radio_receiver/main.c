@@ -9,6 +9,7 @@
 #include<util/delay.h>
 #include "nrf24l01\rf24l01.h"
 #include "uart\my_uart.h"
+#include "robot\engine.h"
 #include <String.h>
 
 #define Control_led PD6
@@ -161,11 +162,19 @@ void radioRec()
 	}
 }
 
-void dataWorkout()
+void sendInfo()
 {
 	table = "\tReceived!";
 	uart_sendString(table);
 	uart_sendByteAsChar(rcv_data[0]);
+}
+
+void dataWorkout(uint8_t* data)
+{
+	//switch(data[0])
+	//{
+	//	case
+	//}
 }
 
 uint8_t* getTransmitData(uint8_t request)

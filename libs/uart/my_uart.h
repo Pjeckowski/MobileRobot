@@ -65,7 +65,7 @@ void uart_sendString(char* table)
 	uart_send('\r');
 }
 
-void uart_sendValueAsChar(uint32_t data)
+void uart_sendValueAsChar(int data)
 {
 	if(data == 0)
 	{
@@ -73,15 +73,24 @@ void uart_sendValueAsChar(uint32_t data)
 	}
 	else
 	{
-		uint32_t dec = 10;
-		while(dec < data)
-			dec*=10;
-		dec/=10;
+		uint8_t tab[20];
+		uint8_t counter = 0;
+
+		if(data < 0)
+		{
+			data = -data;
+			uart_send('-');
+		}
 		while(0 != data)
 		{
-			uart_send(data/dec + 48);
-			data = data % dec;
-			dec /= 10;
+			tab[counter] = data % 10;
+			data /= 10;
+			counter ++;
+		}
+		int i;
+		for(i = counter - 1; i >= 0; i--)
+		{
+			uart_send(tab[i] + 48);
 		}
 	}
 	uart_send('\r');

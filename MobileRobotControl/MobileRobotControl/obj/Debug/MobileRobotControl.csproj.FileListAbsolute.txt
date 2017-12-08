@@ -1,0 +1,27 @@
+D:\Dysk Google\Studia\Programowanie\Nauka\C#\MobileRobotControl\MobileRobotControl\bin\Debug\MobileRobotControl.exe.config
+D:\Dysk Google\Studia\Programowanie\Nauka\C#\MobileRobotControl\MobileRobotControl\bin\Debug\MobileRobotControl.exe
+D:\Dysk Google\Studia\Programowanie\Nauka\C#\MobileRobotControl\MobileRobotControl\bin\Debug\MobileRobotControl.pdb
+D:\Dysk Google\Studia\Programowanie\Nauka\C#\MobileRobotControl\MobileRobotControl\obj\Debug\MainWindow.baml
+D:\Dysk Google\Studia\Programowanie\Nauka\C#\MobileRobotControl\MobileRobotControl\obj\Debug\MainWindow.g.cs
+D:\Dysk Google\Studia\Programowanie\Nauka\C#\MobileRobotControl\MobileRobotControl\obj\Debug\App.g.cs
+D:\Dysk Google\Studia\Programowanie\Nauka\C#\MobileRobotControl\MobileRobotControl\obj\Debug\MobileRobotControl_MarkupCompile.cache
+D:\Dysk Google\Studia\Programowanie\Nauka\C#\MobileRobotControl\MobileRobotControl\obj\Debug\MobileRobotControl.g.resources
+D:\Dysk Google\Studia\Programowanie\Nauka\C#\MobileRobotControl\MobileRobotControl\obj\Debug\MobileRobotControl.Properties.Resources.resources
+D:\Dysk Google\Studia\Programowanie\Nauka\C#\MobileRobotControl\MobileRobotControl\obj\Debug\MobileRobotControl.csproj.GenerateResource.Cache
+D:\Dysk Google\Studia\Programowanie\Nauka\C#\MobileRobotControl\MobileRobotControl\obj\Debug\MobileRobotControl.exe
+D:\Dysk Google\Studia\Programowanie\Nauka\C#\MobileRobotControl\MobileRobotControl\obj\Debug\MobileRobotControl.pdb
+C:\Users\Patryk\Desktop\Mikro\eclipse_projekty\GIT\MobileRobot\MobileRobotControl\MobileRobotControl\bin\Debug\MobileRobotControl.exe.config
+C:\Users\Patryk\Desktop\Mikro\eclipse_projekty\GIT\MobileRobot\MobileRobotControl\MobileRobotControl\obj\Debug\MobileRobotControl.exe
+C:\Users\Patryk\Desktop\Mikro\eclipse_projekty\GIT\MobileRobot\MobileRobotControl\MobileRobotControl\obj\Debug\MobileRobotControl.pdb
+C:\Users\Patryk\Desktop\Mikro\eclipse_projekty\GIT\MobileRobot\MobileRobotControl\MobileRobotControl\obj\Debug\MobileRobotControl.csprojResolveAssemblyReference.cache
+C:\Users\Patryk\Desktop\Mikro\eclipse_projekty\GIT\MobileRobot\MobileRobotControl\MobileRobotControl\obj\Debug\MainWindow.baml
+C:\Users\Patryk\Desktop\Mikro\eclipse_projekty\GIT\MobileRobot\MobileRobotControl\MobileRobotControl\obj\Debug\Windows\Connection_Window.baml
+C:\Users\Patryk\Desktop\Mikro\eclipse_projekty\GIT\MobileRobot\MobileRobotControl\MobileRobotControl\obj\Debug\MainWindow.g.cs
+C:\Users\Patryk\Desktop\Mikro\eclipse_projekty\GIT\MobileRobot\MobileRobotControl\MobileRobotControl\obj\Debug\Windows\Connection_Window.g.cs
+C:\Users\Patryk\Desktop\Mikro\eclipse_projekty\GIT\MobileRobot\MobileRobotControl\MobileRobotControl\obj\Debug\App.g.cs
+C:\Users\Patryk\Desktop\Mikro\eclipse_projekty\GIT\MobileRobot\MobileRobotControl\MobileRobotControl\obj\Debug\MobileRobotControl_MarkupCompile.cache
+C:\Users\Patryk\Desktop\Mikro\eclipse_projekty\GIT\MobileRobot\MobileRobotControl\MobileRobotControl\obj\Debug\MobileRobotControl.g.resources
+C:\Users\Patryk\Desktop\Mikro\eclipse_projekty\GIT\MobileRobot\MobileRobotControl\MobileRobotControl\obj\Debug\MobileRobotControl.Properties.Resources.resources
+C:\Users\Patryk\Desktop\Mikro\eclipse_projekty\GIT\MobileRobot\MobileRobotControl\MobileRobotControl\obj\Debug\MobileRobotControl.csproj.GenerateResource.Cache
+C:\Users\Patryk\Desktop\Mikro\eclipse_projekty\GIT\MobileRobot\MobileRobotControl\MobileRobotControl\bin\Debug\MobileRobotControl.exe
+C:\Users\Patryk\Desktop\Mikro\eclipse_projekty\GIT\MobileRobot\MobileRobotControl\MobileRobotControl\bin\Debug\MobileRobotControl.pdb

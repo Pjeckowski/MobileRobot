@@ -10,21 +10,39 @@
 #include "nrf24l01\rf24l01.h"
 #include "uart\my_uart.h"
 #include "robot\engine.h"
+#include "memops\memops.h"
 #include <String.h>
+
 
 #define Control_led PD6
 #define IRQ 	PA0
 #define IRQPIN	PINA
 #define time1ms 255 -31
+#define FORW 	0
+#define BACK 	1
 
-uint8_t data[5];
-uint8_t rcv_data[32];
+//robot positions
+double posX = 0, posY = 0, angle = 0;
+double goalPosX = 0, goalPosY = 0;
+
+//radio data
+uint8_t radioSendBufor[5];
+uint8_t radioRecBufor[5];
+
+//robot control
+uint8_t lEngineFill = 0, rEngineFill = 0;
+uint8_t lEngineDir = 0, rEngineDir = 0;
+uint8_t isFollowingPoint = 0, isFollowingLine = 0;
+uint8_t maxEngineFill = 0;
+
+
 char *table = "a";
 char status;
 
 void radioRec();
-void dataWorkout();
+uint8_t dataWorkout();
 uint8_t* getTransmitData(uint8_t request);
+void sendInfo();
 
 volatile uint8_t irCounter;
 enum nrfState {REC, WFBT, WFBR, TRA1, TRA2, WFTR, WFRE};
@@ -37,9 +55,9 @@ int main()
 	DDRA = 0b00000000;
 	PORTA = 0b00000001;
 	_delay_ms(1000);
-	init_SPI(1,0); //master, fosc/128
+	init_SPI(1, 0); //master, fosc/128
 	_delay_ms(1000);
-	init_radio(1,0,0);//receiver
+	init_radio(1, 0, 5);//receiver
 	_delay_ms(100);
 	uart_init();
 
@@ -52,18 +70,10 @@ int main()
 	uart_sendByteAsChar(get_reg(STATUS));
 	_delay_ms(2000);
 	PORTB |= (1 << CE);
-	//radio_switchTransmiter();
-	//_delay_ms(100);
+
 
 	while(1)
 	{
-		/*data[0] += 1;
-		if(data[0] == 128)
-			data[0] = 0;
-		radio_preparePayload(data,1);
-		_delay_ms(10);
-		radio_transmit();
-		_delay_ms(2000);*/
 		radioRec();
     }
 }
@@ -85,11 +95,10 @@ void radioRec()
 				PORTB &= ~(1 << CE);
 				while(get_reg(STATUS) != 0b00001110)
 				{
-					radio_receive(rcv_data, 1);
+					radio_receive(radioRecBufor, 5);
 				}
-				dataWorkout();
-
-				if(rcv_data[0] & 0x80) //if transmiter wants respond
+				sendInfo();
+				if(dataWorkout(radioRecBufor)) //if transmiter wants respond
 				{
 					radio_switchTransmiter();
 					RadioState = WFBT;
@@ -113,7 +122,7 @@ void radioRec()
 		case TRA1:
 		{
 			uart_sendString("Gonna transmit!");
-			radio_preparePayload(getTransmitData(rcv_data[0]),1);
+			radio_preparePayload(radioSendBufor, 5);
 			radio_actionTimer = irCounter + 10;
 			RadioState = TRA2;
 			break;
@@ -166,20 +175,91 @@ void sendInfo()
 {
 	table = "\tReceived!";
 	uart_sendString(table);
-	uart_sendByteAsChar(rcv_data[0]);
+	uart_sendByteAsChar(radioRecBufor[0]);
+	double temp = getValFromBytes(radioRecBufor + 1);
+	uart_sendValueAsChar((int) temp);
 }
 
-void dataWorkout(uint8_t* data)
+uint8_t dataWorkout(uint8_t* data)
 {
-	//switch(data[0])
-	//{
-	//	case
-	//}
+	switch(data[0])
+	{
+		case GETX:
+		{
+			radioSendBufor[0] = GETX;
+			getBytes(posX,radioSendBufor + 1);
+			return 1;
+		}
+		case GETY:
+		{
+			radioSendBufor[0] = GETY;
+			getBytes(posY,radioSendBufor + 1);
+			return 1;
+		}
+		case GETA:
+		{
+			radioSendBufor[0] = GETA;
+			getBytes(angle,radioSendBufor + 1);
+			return 1;
+		}
+		case SETGX:
+		{
+			goalPosX = getValFromBytes(data + 1);
+			return 0;
+		}
+		case SETGY:
+		{
+			goalPosY = getValFromBytes(data + 1);
+			return 0;
+		}
+		case SETEF:
+		{
+			lEngineFill = (data[2] & 0b011111111);
+			rEngineFill = (data[3] & 0b011111111);
+
+			if(data[2] & 0b10000000)
+				lEngineDir = FORW;
+			else
+				lEngineDir = BACK;
+
+			if(data[3] & 0b10000000)
+				rEngineDir = FORW;
+			else
+				rEngineDir = BACK;
+
+			return 0;
+		}
+		case FOTOP:
+		{
+			isFollowingPoint = 1;
+			return 0;
+		}
+		case FOLIN:
+		{
+			isFollowingLine = 1;
+			return 0;
+		}
+		case SETME:
+		{
+			maxEngineFill = data[2];
+			return 0;
+		}
+		case RSTOP:
+		{
+			rEngineFill = lEngineFill = 0;
+			isFollowingLine = isFollowingPoint = 0;
+			return 0;
+		}
+		default:
+		{
+			return 0;
+		}
+	}
 }
 
 uint8_t* getTransmitData(uint8_t request)
 {
-	rcv_data[0] += 1;
-	return rcv_data;
+	radioRecBufor[0] += 1;
+	return radioRecBufor;
 }
 

@@ -9,6 +9,8 @@
 #include<util/delay.h>
 #include "nrf24l01\rf24l01.h"
 #include "uart\my_uart.h"
+#include "robot\engine.h"
+#include "memops\memops.h"
 #include <String.h>
 
 #define Control_led PD6
@@ -27,7 +29,14 @@ enum nrfState RadioState = TRA1;
 volatile uint8_t radio_actionTimer = 0;
 volatile uint8_t transmitTrigger = 1;
 char *table = "a";
-uint8_t data[5],rcv_data[5];
+
+//radio data
+uint8_t radioSendBufor[5];
+uint8_t radioRecBufor[5];
+
+//radio positions
+double posX = 0, posY = 0, angle = 0;
+double goalPosX = 0, goalPosY = 0;
 
 volatile uint16_t counter=0;
 
@@ -44,43 +53,20 @@ int main()
 
 	_delay_ms(3000);
 	init_SPI(1,0);
-	init_radio(0,0,0);
+	init_radio(0, 0, 5);
 
 	if(get_reg(STATUS) == 0b00001110)
 		PORTD = 0b01000000;
 	_delay_ms(5000);
 
 	PORTD = 0b00000000;
-	data[0] = 120;
+	radioRecBufor[0] = 0;
 
 	uart_init();
-	//radio_switchReceiver();
-	//_delay_ms(100);
-	//PORTB |= (1 << CE);
+
 	while(1)
 	{
-		/*if(!(IRQPIN & (1 << IRQ)))
-		{
-			PORTB &= ~(1 << CE);
-			while(get_reg(STATUS) != 0b00001110)
-			{
-				radio_receive(rcv_data, 1);
-			}
-			dataWorkout1();
-			_delay_ms(100);
-			PORTB |= (1 << CE);
-		}*/
-
 		radioTra();
-		//_delay_ms(2000);
-
-		/*data[0] += 1;
-		if(data[0] == 128)
-			data[0] = 0;
-		radio_preparePayload(data,1);
-		_delay_ms(10);
-		radio_transmit();
-		_delay_ms(2000);*/
 	}
 }
 
@@ -95,7 +81,6 @@ ISR(TIMER0_OVF_vect)
 		transmitTrigger = 1;
 
 	}
-
 }
 
 
@@ -107,10 +92,10 @@ void radioTra()
 		{
 			if(transmitTrigger == 1)
 			{
-				data[0] += 1;
-				if(data[0] == 129)
-					data[0] = 120;
-				radio_preparePayload(data,1);
+				posX += 1;
+				radioSendBufor[0] = SETGX;
+				getBytes(posX, radioSendBufor + 1);
+				radio_preparePayload(radioSendBufor,5);
 				radio_actionTimer = irCounter + 10;
 				transmitTrigger = 0;
 				RadioState = TRA2;
@@ -135,7 +120,7 @@ void radioTra()
 				uart_sendByteAsChar(get_reg(STATUS));
 				if(get_reg(STATUS) == 0b00101110)//if transmition succesfull
 				{
-					if(data[0] & 0x80) //if i want respond
+					if(radioSendBufor[0] & 0x80) //if i want respond
 					{
 						reset_radio();
 						radio_switchReceiver();
@@ -175,9 +160,9 @@ void radioTra()
 						{
 							while(get_reg(STATUS) != 0b00001110)
 							{
-								radio_receive(rcv_data, 1);
+								radio_receive(radioRecBufor, 5);
 							}
-							dataWorkout(rcv_data,1);
+							dataWorkout(radioRecBufor,5);
 						}
 						else
 						{
@@ -220,7 +205,7 @@ void dataWorkout1()
 {
 	table = "\tReceived!";
 	uart_sendString(table);
-	uart_sendByteAsChar(rcv_data[0]);
+	uart_sendByteAsChar(radioRecBufor[0]);
 }
 
 

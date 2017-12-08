@@ -296,16 +296,16 @@ void radio_transmit()
 }
 
 
-void radio_receive(uint8_t Data_Received[],uint8_t Count)
+void radio_receive(uint8_t data_Received[],uint8_t count)
 {
-	_delay_us(20);
+	_delay_us(10);
 	PORTB &= ~(1<<CE);
-	r_w_radio(R,R_RX_PAYLOAD,dummy,Count,Data_Received);
-	_delay_us(20);
+	r_w_radio(R,R_RX_PAYLOAD, dummy, count, data_Received);
+	_delay_us(10);
 	send_SPI(FLUSH_RX);
-	_delay_us(20);
+	_delay_us(10);
 	reset_radio();
-	_delay_us(20);
+	_delay_us(10);
 }
 
 

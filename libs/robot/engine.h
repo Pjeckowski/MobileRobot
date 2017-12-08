@@ -3,9 +3,9 @@
 
 //requests
 
-#define GETX	0b100000001
-#define GETY	0b100000010
-#define GETA	0b100000011
+#define GETX	0b10000001
+#define GETY	0b10000010
+#define GETA	0b10000011
 
 
 //commands
@@ -18,6 +18,7 @@
 #define SETME	0b00000110
 #define RSTOP	0b01111111
 
-
+//other
+#define ERROR	0b01010101
 
 #endif /* ENGINE_H_ */

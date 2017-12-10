@@ -70,6 +70,15 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="RobotPacket\IRobotPacket.cs" />
+    <Compile Include="RobotPacket\PacketHeaders.cs" />
+    <Compile Include="RobotPacket\RobotPacket.cs" />
+    <Compile Include="RobotStatusUpdate\AngleUpdate.cs" />
+    <Compile Include="RobotStatusUpdate\EngineFillUpdate.cs" />
+    <Compile Include="RobotStatusUpdate\IRobotStatusUpdate.cs" />
+    <Compile Include="RobotStatusUpdate\RobotStatusUpdateFactory.cs" />
+    <Compile Include="RobotStatusUpdate\XPosUpdate.cs" />
+    <Compile Include="RobotStatusUpdate\YPosUpdate.cs" />
     <Compile Include="Windows\Connection_Window.xaml.cs">
       <DependentUpon>Windows\Connection_Window.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -102,6 +111,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

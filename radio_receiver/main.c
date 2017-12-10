@@ -31,6 +31,7 @@ uint8_t radioRecBufor[5];
 
 //robot control
 uint8_t lEngineFill = 0, rEngineFill = 0;
+uint8_t aLEngineFill = 0, aREngineFill = 0;
 uint8_t lEngineDir = 0, rEngineDir = 0;
 uint8_t isFollowingPoint = 0, isFollowingLine = 0;
 uint8_t maxEngineFill = 0;
@@ -176,8 +177,6 @@ void sendInfo()
 	table = "\tReceived!";
 	uart_sendString(table);
 	uart_sendByteAsChar(radioRecBufor[0]);
-	double temp = getValFromBytes(radioRecBufor + 1);
-	uart_sendValueAsChar((int) temp);
 }
 
 uint8_t dataWorkout(uint8_t* data)
@@ -187,19 +186,26 @@ uint8_t dataWorkout(uint8_t* data)
 		case GETX:
 		{
 			radioSendBufor[0] = GETX;
-			getBytes(posX,radioSendBufor + 1);
+			getBytes(posX, radioSendBufor + 1);
 			return 1;
 		}
 		case GETY:
 		{
 			radioSendBufor[0] = GETY;
-			getBytes(posY,radioSendBufor + 1);
+			getBytes(posY, radioSendBufor + 1);
 			return 1;
 		}
 		case GETA:
 		{
 			radioSendBufor[0] = GETA;
-			getBytes(angle,radioSendBufor + 1);
+			getBytes(angle, radioSendBufor + 1);
+			return 1;
+		}
+		case GETEF:
+		{
+			radioSendBufor[0] = GETEF;
+			radioSendBufor[1] = aLEngineFill;
+			radioSendBufor[2] = aREngineFill;
 			return 1;
 		}
 		case SETGX:
@@ -242,6 +248,10 @@ uint8_t dataWorkout(uint8_t* data)
 		case SETME:
 		{
 			maxEngineFill = data[2];
+			return 0;
+		}
+		case COPAC:
+		{
 			return 0;
 		}
 		case RSTOP:

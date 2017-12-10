@@ -55,6 +55,15 @@ void uart_sendByteAsChar(uint8_t data)
 
 }
 
+void uart_sendTable(uint8_t* table, uint8_t count)
+{
+	int i;
+	for(i = 0; i < count; i++)
+	{
+		uart_send(table[i]);
+	}
+	uart_send('\r');
+}
 void uart_sendString(char* table)
 {
 	int i;

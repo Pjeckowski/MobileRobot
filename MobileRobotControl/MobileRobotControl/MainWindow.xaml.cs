@@ -1,5 +1,8 @@
 ﻿using System.IO.Ports;
+using System.Text;
 using System.Windows;
+using MobileRobotControl.RobotPacket;
+using MobileRobotControl.RobotStatusUpdate;
 
 namespace MobileRobotControl
 {
@@ -16,6 +19,16 @@ namespace MobileRobotControl
         {
             InitializeComponent();
             robotPosXLabel.Content = sizeof(float).ToString();
+            byte[] b = {80, 1, 1, 1, 1};
+
+            string a = Encoding.ASCII.GetString(b);
+            IRobotPacket packet = new RobotPacket.RobotPacket(a);
+            RobotStatusUpdateFactory factory  = new RobotStatusUpdateFactory();
+            IRobotStatusUpdate robotStatusUpdate = factory.GetRobotStatusUpdate(packet);
+            if (robotStatusUpdate.GetType() == typeof(XPosUpdate))
+            {
+                robotAngleLabel.Content = "Działa!! :D:D";
+            }
         }
 
         private void ConnectMenuItem_Click(object sender, RoutedEventArgs e)

@@ -9,23 +9,14 @@ namespace MobileRobotControl.RobotPacket
     public class RobotPacket: IRobotPacket
     {
         public PacketHeaders Header { get; private set; }
-        private byte[] content = new byte[4];
-        public byte[] Content 
-        {
-            get { return content; }
-        }
+        public string Content { get; private set; }
 
         public RobotPacket(string receivedData)
         {
-            byte[] toBytes = Encoding.ASCII.GetBytes(receivedData);
-            if (Enum.IsDefined(typeof(PacketHeaders),(int) toBytes[0]))
+            if (Enum.IsDefined(typeof(PacketHeaders), receivedData[0]))
             {
-                Header = (PacketHeaders) toBytes[0];
-
-                for (int i = 0; i < content.Length; i++)
-                {
-                    content[i] = toBytes[i + 1];
-                }
+                Header = (PacketHeaders) receivedData[0];
+                Content = receivedData.Replace(receivedData[0].ToString(), "");
             }
             else
             {

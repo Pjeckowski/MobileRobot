@@ -3,12 +3,13 @@
 
 //requests
 
-#define GETX	0b01000001
-#define GETY	0b01000010
-#define GETA	0b01000011
-#define GETEF	0b01000100
+#define GETX	0b10000001
+#define GETY	0b10000010
+#define GETA	0b10000011
+#define GETEF	0b10000100
 #define POSU    0b00000101
 
+#define isRequest(X) ((X) & 0x80)
 //commands
 
 #define SETGX	0b00000001

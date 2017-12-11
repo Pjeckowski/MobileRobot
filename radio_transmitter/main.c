@@ -52,6 +52,7 @@ uint8_t uartRecCounter = 0, uartTransmitTrigger = 0, uartFlushTimer = 0, isPOSU 
 uint8_t posuPosition = 0;
 
 volatile uint16_t counter=0;
+float a = 6000;
 
 int main()
 {
@@ -81,8 +82,8 @@ int main()
 
 	while(1)
 	{
-		prepareNextTransmission();
-		radioTra();
+		//prepareNextTransmission();
+		//radioTra();
 	}
 }
 
@@ -91,11 +92,21 @@ ISR(TIMER0_OVF_vect)
 	TCNT0 = time1ms;
 	irCounter ++;
 	counter ++;
-	/*if(counter == 999)
+	if(counter == 999)
 	{
+		uart_sendValueAsChar(sizeof(int));
+		a++;
+		uint8_t data[5];
+		getBytes(a, data + 1);
+		data[0] = GETX;
+		uart_sendPacket(data, 5);
+		data[0] = GETY;
+		uart_sendPacket(data, 5);
+		data[0] = GETA;
+		uart_sendPacket(data, 5);
+		//uart_sendPosPacket('X', b);
 		counter = 0;
-		transmitTrigger = 1;
-	}*/
+	}
 	if(0!= uartFlushTimer && irCounter == uartFlushTimer)
 	{
 		uartRecCounter = 0;
@@ -166,9 +177,6 @@ void radioTra()
 			if(transmitTrigger == 1)
 			{
 				radioBusy = 1;
-				//posX += 1;
-				//radioSendBufor[0] = SETGX;
-				//getBytes(posX, radioSendBufor + 1);
 				radio_preparePayload(radioSendBufor,5);
 				radio_actionTimer = irCounter + 10;
 				transmitTrigger = 0;
@@ -194,11 +202,11 @@ void radioTra()
 		{
 			if((!(IRQPIN & (1 << IRQ))) || irCounter == radio_actionTimer)
 			{
-				uart_sendString("Transmitted!");
-				uart_sendByteAsChar(get_reg(STATUS));
+				//uart_sendString("Transmitted!");
+				//uart_sendByteAsChar(get_reg(STATUS));
 				if(get_reg(STATUS) == 0b00101110)//if transmition succesfull
 				{
-					if(radioSendBufor[0] & 0x80) //if i want respond
+					if(isRequest(radioSendBufor[0])) //if i want respond
 					{
 						reset_radio();
 						radio_switchReceiver();
@@ -274,7 +282,7 @@ void errorInform()
 
 void dataWorkout(uint8_t data[], uint8_t count )
 {
-	uart_sendTable(data, count);
+	uart_sendPacket(data, count);
 }
 
 void dataWorkout1()

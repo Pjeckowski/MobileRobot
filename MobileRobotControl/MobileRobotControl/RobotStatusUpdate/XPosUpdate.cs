@@ -8,13 +8,16 @@ namespace MobileRobotControl.RobotStatusUpdate
 {
     public class XPosUpdate : IRobotStatusUpdate
     {
-        public XPosUpdate(byte[] content)
+        private float x;
+
+        public XPosUpdate(string content)
         {
-            
+            x = Convert.ToSingle(content) / 100;
         }
+
         public void Execute(MainWindow mainWindow)
         {
-            throw new NotImplementedException();
+            mainWindow.UpdateX(x);
         }
     }
 }

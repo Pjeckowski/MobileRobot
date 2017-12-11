@@ -46,6 +46,7 @@ uint8_t* getTransmitData(uint8_t request);
 void sendInfo();
 
 volatile uint8_t irCounter;
+int suppCounter = 0;
 enum nrfState {REC, WFBT, WFBR, TRA1, TRA2, WFTR, WFRE};
 enum nrfState RadioState = REC;
 uint8_t radio_actionTimer = 0;
@@ -83,6 +84,19 @@ ISR(TIMER0_OVF_vect)
 {
 	TCNT0 = time1ms;
 	irCounter ++;
+	suppCounter ++;
+	if(suppCounter == 1000)
+	{
+		posX++;
+		posY++;
+		angle++;
+		aREngineFill++;
+		aLEngineFill ++;
+		if(aREngineFill == 100)
+		{
+			aREngineFill = aLEngineFill = 0;
+		}
+	}
 }
 
 void radioRec()

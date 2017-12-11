@@ -3,6 +3,6 @@
     public interface IRobotPacket
     {
         PacketHeaders Header { get; }
-        byte[] Content { get; }
+        string Content { get; }
     }
 }

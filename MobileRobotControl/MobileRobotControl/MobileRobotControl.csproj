@@ -72,6 +72,7 @@
     </Compile>
     <Compile Include="RobotPacket\IRobotPacket.cs" />
     <Compile Include="RobotPacket\PacketHeaders.cs" />
+    <Compile Include="RobotPacket\PacketSplitter.cs" />
     <Compile Include="RobotPacket\RobotPacket.cs" />
     <Compile Include="RobotStatusUpdate\AngleUpdate.cs" />
     <Compile Include="RobotStatusUpdate\EngineFillUpdate.cs" />

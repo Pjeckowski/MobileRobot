@@ -169,12 +169,12 @@ namespace MobileRobotControl
         private void Set_Button_Click(object sender, RoutedEventArgs e)
         {
             Settings_Save();
-            Connection_Window1.Close();
+            this.Close();
         }
 
         private void Close_Button_Click(object sender, RoutedEventArgs e)
         {
-            Connection_Window1.Close();
+            this.Close();
         }
 
         private void Combobox_MouseEnter(object sender, MouseEventArgs e)

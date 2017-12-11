@@ -15,6 +15,12 @@
 #include<util/delay.h>
 #include<avr/pgmspace.h>
 #include<string.h>
+#include "robot\engine.h"
+#include "memops\memops.h"
+
+void uart_sendEngPacket(uint8_t header, uint8_t lEngine, uint8_t rEngine);
+void uart_sendPosPacket(uint8_t header, float data);
+void uart_sendPacket(uint8_t* data, uint8_t count);
 
 void uart_init()
 {
@@ -74,7 +80,7 @@ void uart_sendString(char* table)
 	uart_send('\r');
 }
 
-void uart_sendValueAsChar(int data)
+void uart_sendValueAsChar(int32_t data)
 {
 	if(data == 0)
 	{
@@ -102,6 +108,94 @@ void uart_sendValueAsChar(int data)
 			uart_send(tab[i] + 48);
 		}
 	}
+}
+
+int intToCharTable(int32_t data, uint8_t* table)
+{
+	uint8_t count = 0;
+	if(data == 0)
+		{
+			table[0] = 48;
+			return 1;
+		}
+		else
+		{
+			uint8_t tab[20];
+			uint8_t counter = 0;
+
+
+			if(data < 0)
+			{
+				data = -data;
+				table[0] = ('-');
+				count ++;
+			}
+			while(0 != data)
+			{
+				tab[counter] = data % 10;
+				data /= 10;
+				counter ++;
+			}
+			int i;
+			for(i = counter - 1; i >= 0; i--)
+			{
+				table[count] = tab[i] + 48;
+				count ++;
+			}
+		}
+	return count;
+}
+
+void uart_sendPacket(uint8_t data[], uint8_t count)
+{
+	switch (data[0])
+	{
+		case GETX:
+		{
+			float temp = getValFromBytes(data + 1);
+			uart_sendPosPacket('X', temp);
+			break;
+		}
+		case GETY:
+		{
+			float temp = getValFromBytes(data + 1);
+			uart_sendPosPacket('Y', temp);
+			break;
+		}
+		case GETA:
+		{
+			float temp = getValFromBytes(data + 1);
+			uart_sendPosPacket('A', temp);
+			break;
+		}
+		case GETEF:
+		{
+
+			uart_sendEngPacket('E', data[1], data[2]);
+			break;
+		}
+		default:
+		{
+			break;
+		}
+	}
+}
+
+void uart_sendPosPacket(uint8_t header, float data)
+{
+	uart_send('P');
+	uart_send(header);
+	uart_sendValueAsChar((int32_t)(data * 100));
+	uart_send('\r');
+}
+
+void uart_sendEngPacket(uint8_t header,uint8_t lEngine, uint8_t rEngine)
+{
+	uart_send('P');
+	uart_send('E');
+	uart_sendValueAsChar((int32_t) lEngine);
+	uart_send(',');
+	uart_sendValueAsChar((int32_t) rEngine);
 	uart_send('\r');
 }
 

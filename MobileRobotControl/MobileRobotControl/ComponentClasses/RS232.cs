@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.IO.Ports;
+using System.Text;
 
 namespace MobileRobotControl
 {
@@ -27,6 +28,7 @@ namespace MobileRobotControl
                     StopBits = StopBits.Two
                 };
                 Port.RtsEnable = true;
+                Port.Encoding = Encoding.GetEncoding("iso-8859-1");
                 Port.DataReceived += new SerialDataReceivedEventHandler(ReceiverHandler);
                 Port.Open();
 
@@ -42,6 +44,7 @@ namespace MobileRobotControl
             this.Port = new SerialPort();
             this.Port = Port;
             this.Port.RtsEnable = true;
+            Port.Encoding = Encoding.GetEncoding("iso-8859-1");
             this.Port.DataReceived += new SerialDataReceivedEventHandler(ReceiverHandler);
 
             try
@@ -64,11 +67,11 @@ namespace MobileRobotControl
 
         void ReceiverHandler(object sender,SerialDataReceivedEventArgs e)
         {
-
             data += Port.ReadExisting();
             
             if (data.Contains("\r"))
             {
+                data = data.Replace(('\r').ToString(), "");
                 if(DataReceived != null) DataReceived(data);
                 data = "";
             }

@@ -35,8 +35,8 @@
                         <Label x:Name="robotPosYLabel" Grid.Row="0" Content="0.0" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         <Label Content="Angle:" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" />
                         <Label x:Name="robotAngleLabel" Grid.Row="1" Content="0.0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        <ProgressBar x:Name="leftEngineProgressBar"  Orientation="Vertical" Grid.Row="1" Grid.RowSpan="2" />
-                        <ProgressBar x:Name="rightEngineProgressBar"  Orientation="Vertical" Grid.Row="1" Grid.RowSpan="2" Grid.Column="3" />
+                        <ProgressBar x:Name="leftEngineProgressBar" Maximum="100" Orientation="Vertical" Grid.Row="1" Grid.RowSpan="2" />
+                        <ProgressBar x:Name="rightEngineProgressBar" Maximum="100" Orientation="Vertical" Grid.Row="1" Grid.RowSpan="2" Grid.Column="3" />
                         <Label Content="MotorSpeed" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"  HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Grid>
                     

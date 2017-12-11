@@ -8,13 +8,16 @@ namespace MobileRobotControl.RobotStatusUpdate
 {
     public class AngleUpdate: IRobotStatusUpdate
     {
-        public AngleUpdate(byte[] content)
+        private float angle;
+
+        public AngleUpdate(string content)
         {
-            
+            angle = Convert.ToSingle(content) / 100;
         }
+
         public void Execute(MainWindow mainWindow)
         {
-            throw new NotImplementedException();
+            mainWindow.UpdateAngle(angle);
         }
     }
 }

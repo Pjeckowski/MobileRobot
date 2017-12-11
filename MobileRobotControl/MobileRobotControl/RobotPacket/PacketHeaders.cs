@@ -8,9 +8,9 @@ namespace MobileRobotControl.RobotPacket
 {
     public enum PacketHeaders
     {
-        XUpdate = 80,
-        YUpdate = 130,
-        AUpdate = 131,
-        EFUpdate = 132
+        XUpdate = 'X',
+        YUpdate = 'Y',
+        AUpdate = 'A',
+        EFUpdate = 'E'
     }
 }

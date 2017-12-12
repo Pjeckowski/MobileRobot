@@ -22,8 +22,8 @@
 #define BACK 	1
 
 //robot positions
-double posX = 0, posY = 0, angle = 0;
-double goalPosX = 0, goalPosY = 0;
+float posX = 0, posY = 0, angle = 0;
+float goalPosX = 0, goalPosY = 0;
 
 //radio data
 uint8_t radioSendBufor[5];
@@ -85,7 +85,7 @@ ISR(TIMER0_OVF_vect)
 	TCNT0 = time1ms;
 	irCounter ++;
 	suppCounter ++;
-	if(suppCounter == 1000)
+	if(suppCounter >= 1000)
 	{
 		posX++;
 		posY++;
@@ -96,6 +96,7 @@ ISR(TIMER0_OVF_vect)
 		{
 			aREngineFill = aLEngineFill = 0;
 		}
+		suppCounter = 0;
 	}
 }
 
@@ -112,12 +113,12 @@ void radioRec()
 				{
 					radio_receive(radioRecBufor, 5);
 				}
-				sendInfo();
+				//sendInfo();
 				if(dataWorkout(radioRecBufor)) //if transmiter wants respond
 				{
 					radio_switchTransmiter();
 					RadioState = WFBT;
-					radio_actionTimer = irCounter + 10;
+					radio_actionTimer = irCounter + 28;
 				}
 				else
 				{
@@ -136,7 +137,7 @@ void radioRec()
 		}
 		case TRA1:
 		{
-			uart_sendString("Gonna transmit!");
+			//uart_sendString("Gonna transmit!");
 			radio_preparePayload(radioSendBufor, 5);
 			radio_actionTimer = irCounter + 10;
 			RadioState = TRA2;

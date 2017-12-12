@@ -71,7 +71,6 @@ namespace MobileRobotControl
             
             if (data.Contains("\r"))
             {
-                data = data.Replace(('\r').ToString(), "");
                 if(DataReceived != null) DataReceived(data);
                 data = "";
             }

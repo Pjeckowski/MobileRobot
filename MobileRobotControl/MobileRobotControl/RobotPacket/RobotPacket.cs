@@ -13,7 +13,7 @@ namespace MobileRobotControl.RobotPacket
 
         public RobotPacket(string receivedData)
         {
-            if (Enum.IsDefined(typeof(PacketHeaders), receivedData[0]))
+            if (Enum.IsDefined(typeof(PacketHeaders), (int) receivedData[0]))
             {
                 Header = (PacketHeaders) receivedData[0];
                 Content = receivedData.Replace(receivedData[0].ToString(), "");

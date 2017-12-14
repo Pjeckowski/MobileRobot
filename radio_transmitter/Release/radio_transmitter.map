@@ -38,6 +38,7 @@ d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/av
 Allocating common symbols
 Common symbol       size              file
 
+uartRecBufor        0x64              ./main.o
 dataToSend          0x5               ./main.o
 RadioMode           0x1               ./main.o
 radioRecBufor       0x5               ./main.o
@@ -158,7 +159,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0xe5a
+.text           0x00000000      0xe80
  *(.vectors)
  .vectors       0x00000000       0x54 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5/crtm32.o
                 0x00000000                __vector_default
@@ -220,7 +221,6 @@ END GROUP
                 0x0000008e                __bad_interrupt
                 0x0000008e                __vector_6
                 0x0000008e                __vector_3
-                0x0000008e                __vector_13
                 0x0000008e                __vector_17
                 0x0000008e                __vector_19
                 0x0000008e                __vector_7
@@ -341,140 +341,146 @@ END GROUP
  .text.dataWorkout1
                 0x000009d0       0x18 ./main.o
                 0x000009d0                dataWorkout1
+ .text.uartPacketWorkout
+                0x000009e8       0x18 ./main.o
+                0x000009e8                uartPacketWorkout
  .text.uartRequestCollect
-                0x000009e8       0x8e ./main.o
-                0x000009e8                uartRequestCollect
+                0x00000a00       0x50 ./main.o
+                0x00000a00                uartRequestCollect
+ .text.__vector_13
+                0x00000a50       0x4c ./main.o
+                0x00000a50                __vector_13
  .text.getNextPosRequest
-                0x00000a76       0x46 ./main.o
-                0x00000a76                getNextPosRequest
+                0x00000a9c       0x46 ./main.o
+                0x00000a9c                getNextPosRequest
  .text.prepareNextTransmission
-                0x00000abc       0xcc ./main.o
-                0x00000abc                prepareNextTransmission
+                0x00000ae2       0xcc ./main.o
+                0x00000ae2                prepareNextTransmission
  .text.startup.main
-                0x00000b88       0x82 ./main.o
-                0x00000b88                main
+                0x00000bae       0x82 ./main.o
+                0x00000bae                main
  .text.libgcc.mul
-                0x00000c0a        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_divmodsi4.o)
+                0x00000c30        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_divmodsi4.o)
  .text.libgcc.div
-                0x00000c0a       0x2e d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_divmodsi4.o)
-                0x00000c0a                __divmodsi4
- .text.libgcc   0x00000c38        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_divmodsi4.o)
+                0x00000c30       0x2e d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_divmodsi4.o)
+                0x00000c30                __divmodsi4
+ .text.libgcc   0x00000c5e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_divmodsi4.o)
  .text.libgcc.prologue
-                0x00000c38        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_divmodsi4.o)
+                0x00000c5e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_divmodsi4.o)
  .text.libgcc.builtins
-                0x00000c38        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_divmodsi4.o)
+                0x00000c5e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_divmodsi4.o)
  .text.libgcc.fmul
-                0x00000c38        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_divmodsi4.o)
+                0x00000c5e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_divmodsi4.o)
  .text.libgcc.fixed
-                0x00000c38        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_divmodsi4.o)
+                0x00000c5e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_divmodsi4.o)
  .text.libgcc.mul
-                0x00000c38        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_negsi2.o)
+                0x00000c5e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_negsi2.o)
  .text.libgcc.div
-                0x00000c38       0x10 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_negsi2.o)
-                0x00000c38                __negsi2
- .text.libgcc   0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_negsi2.o)
+                0x00000c5e       0x10 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_negsi2.o)
+                0x00000c5e                __negsi2
+ .text.libgcc   0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_negsi2.o)
  .text.libgcc.prologue
-                0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_negsi2.o)
+                0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_negsi2.o)
  .text.libgcc.builtins
-                0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_negsi2.o)
+                0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_negsi2.o)
  .text.libgcc.fmul
-                0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_negsi2.o)
+                0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_negsi2.o)
  .text.libgcc.fixed
-                0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_negsi2.o)
+                0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_negsi2.o)
  .text.libgcc.mul
-                0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
+                0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
  .text.libgcc.div
-                0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
- .text.libgcc   0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
+                0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
+ .text.libgcc   0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
  .text.libgcc.prologue
-                0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
+                0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
  .text.libgcc.builtins
-                0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
+                0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
  .text.libgcc.fmul
-                0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
+                0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
  .text.libgcc.fixed
-                0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
+                0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
  .text.libgcc.mul
-                0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_copy_data.o)
+                0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_copy_data.o)
  .text.libgcc.div
-                0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_copy_data.o)
- .text.libgcc   0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_copy_data.o)
+                0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_copy_data.o)
+ .text.libgcc   0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_copy_data.o)
  .text.libgcc.prologue
-                0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_copy_data.o)
+                0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_copy_data.o)
  .text.libgcc.builtins
-                0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_copy_data.o)
+                0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_copy_data.o)
  .text.libgcc.fmul
-                0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_copy_data.o)
+                0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_copy_data.o)
  .text.libgcc.fixed
-                0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_copy_data.o)
+                0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_copy_data.o)
  .text.libgcc.mul
-                0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_clear_bss.o)
+                0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_clear_bss.o)
  .text.libgcc.div
-                0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_clear_bss.o)
- .text.libgcc   0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_clear_bss.o)
+                0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_clear_bss.o)
+ .text.libgcc   0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_clear_bss.o)
  .text.libgcc.prologue
-                0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_clear_bss.o)
+                0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_clear_bss.o)
  .text.libgcc.builtins
-                0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_clear_bss.o)
+                0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_clear_bss.o)
  .text.libgcc.fmul
-                0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_clear_bss.o)
+                0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_clear_bss.o)
  .text.libgcc.fixed
-                0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_clear_bss.o)
+                0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_clear_bss.o)
  .text.libgcc.mul
-                0x00000c48        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_udivmodsi4.o)
+                0x00000c6e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_udivmodsi4.o)
  .text.libgcc.div
-                0x00000c48       0x44 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_udivmodsi4.o)
-                0x00000c48                __udivmodsi4
- .text.libgcc   0x00000c8c        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_udivmodsi4.o)
+                0x00000c6e       0x44 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_udivmodsi4.o)
+                0x00000c6e                __udivmodsi4
+ .text.libgcc   0x00000cb2        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_udivmodsi4.o)
  .text.libgcc.prologue
-                0x00000c8c        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_udivmodsi4.o)
+                0x00000cb2        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_udivmodsi4.o)
  .text.libgcc.builtins
-                0x00000c8c        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_udivmodsi4.o)
+                0x00000cb2        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_udivmodsi4.o)
  .text.libgcc.fmul
-                0x00000c8c        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_udivmodsi4.o)
+                0x00000cb2        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_udivmodsi4.o)
  .text.libgcc.fixed
-                0x00000c8c        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_udivmodsi4.o)
+                0x00000cb2        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_udivmodsi4.o)
  .text.avr-libc.fplib
-                0x00000c8c        0xa d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libm.a(fixsfsi.o)
-                0x00000c8c                __fixsfsi
+                0x00000cb2        0xa d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libm.a(fixsfsi.o)
+                0x00000cb2                __fixsfsi
  .text.avr-libc.fplib
-                0x00000c96       0x58 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libm.a(fixunssfsi.o)
-                0x00000c96                __fixunssfsi
+                0x00000cbc       0x58 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libm.a(fixunssfsi.o)
+                0x00000cbc                __fixunssfsi
  .text.avr-libc.fplib
-                0x00000cee       0x44 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libm.a(fp_split3.o)
-                0x00000cee                __fp_split3
-                0x00000cfe                __fp_splitA
+                0x00000d14       0x44 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libm.a(fp_split3.o)
+                0x00000d14                __fp_split3
+                0x00000d24                __fp_splitA
  .text.avr-libc.fplib
-                0x00000d32        0xe d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libm.a(fp_zero.o)
-                0x00000d32                __fp_zero
-                0x00000d34                __fp_szero
+                0x00000d58        0xe d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libm.a(fp_zero.o)
+                0x00000d58                __fp_zero
+                0x00000d5a                __fp_szero
  .text.avr-libc.fplib
-                0x00000d40        0x4 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libm.a(mulsf3.o)
-                0x00000d40                __mulsf3
+                0x00000d66        0x4 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libm.a(mulsf3.o)
+                0x00000d66                __mulsf3
  .text.avr-libc.fplib
-                0x00000d44       0xc2 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libm.a(mulsf3x.o)
-                0x00000d58                __mulsf3x
-                0x00000d5c                __mulsf3_pse
+                0x00000d6a       0xc2 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libm.a(mulsf3x.o)
+                0x00000d7e                __mulsf3x
+                0x00000d82                __mulsf3_pse
  .text.avr-libc.fplib
-                0x00000e06        0xc d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libm.a(fp_inf.o)
-                0x00000e06                __fp_inf
+                0x00000e2c        0xc d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libm.a(fp_inf.o)
+                0x00000e2c                __fp_inf
  .text.avr-libc.fplib
-                0x00000e12        0x6 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libm.a(fp_nan.o)
-                0x00000e12                __fp_nan
+                0x00000e38        0x6 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libm.a(fp_nan.o)
+                0x00000e38                __fp_nan
  .text.avr-libc.fplib
-                0x00000e18        0xe d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libm.a(fp_pscA.o)
-                0x00000e18                __fp_pscA
+                0x00000e3e        0xe d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libm.a(fp_pscA.o)
+                0x00000e3e                __fp_pscA
  .text.avr-libc.fplib
-                0x00000e26        0xe d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libm.a(fp_pscB.o)
-                0x00000e26                __fp_pscB
+                0x00000e4c        0xe d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libm.a(fp_pscB.o)
+                0x00000e4c                __fp_pscB
  .text.avr-libc.fplib
-                0x00000e34       0x22 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libm.a(fp_round.o)
-                0x00000e34                __fp_round
-                0x00000e56                . = ALIGN (0x2)
+                0x00000e5a       0x22 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libm.a(fp_round.o)
+                0x00000e5a                __fp_round
+                0x00000e7c                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00000e56        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
-                0x00000e56                _exit
-                0x00000e56                exit
+ .fini9         0x00000e7c        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
+                0x00000e7c                _exit
+                0x00000e7c                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -493,11 +499,11 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00000e56        0x4 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
+ .fini0         0x00000e7c        0x4 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
  *(.fini0)
-                0x00000e5a                _etext = .
+                0x00000e80                _etext = .
 
-.data           0x00800060       0x3e load address 0x00000e5a
+.data           0x00800060       0x3e load address 0x00000e80
                 0x00800060                PROVIDE (__data_start, .)
  *(.data)
  .data          0x00800060        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5/crtm32.o
@@ -548,7 +554,7 @@ END GROUP
                 0x0080009e                _edata = .
                 0x0080009e                PROVIDE (__data_end, .)
 
-.bss            0x0080009e       0x3b
+.bss            0x0080009e       0x9f
                 0x0080009e                PROVIDE (__bss_start, .)
  *(.bss)
  .bss           0x0080009e        0x0 d:/atmel/avr tools/avr toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5/crtm32.o
@@ -613,24 +619,25 @@ END GROUP
                 0x008000bd        0x1 ./main.o
                 0x008000bd                dataCount
  *(COMMON)
- COMMON         0x008000be       0x1b ./main.o
-                0x008000be                dataToSend
-                0x008000c3                RadioMode
-                0x008000c4                radioRecBufor
-                0x008000c9                uartSendBufor
-                0x008000ce                irCounter
-                0x008000cf                dummy
-                0x008000d4                radioSendBufor
-                0x008000d9                PROVIDE (__bss_end, .)
-                0x00000e5a                __data_load_start = LOADADDR (.data)
-                0x00000e98                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x008000be       0x7f ./main.o
+                0x008000be                uartRecBufor
+                0x00800122                dataToSend
+                0x00800127                RadioMode
+                0x00800128                radioRecBufor
+                0x0080012d                uartSendBufor
+                0x00800132                irCounter
+                0x00800133                dummy
+                0x00800138                radioSendBufor
+                0x0080013d                PROVIDE (__bss_end, .)
+                0x00000e80                __data_load_start = LOADADDR (.data)
+                0x00000ebe                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x008000d9        0x0
-                0x008000d9                PROVIDE (__noinit_start, .)
+.noinit         0x0080013d        0x0
+                0x0080013d                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x008000d9                PROVIDE (__noinit_end, .)
-                0x008000d9                _end = .
-                0x008000d9                PROVIDE (__heap_start, .)
+                0x0080013d                PROVIDE (__noinit_end, .)
+                0x0080013d                _end = .
+                0x0080013d                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
  *(.eeprom*)

@@ -18,6 +18,16 @@
 #include "robot\engine.h"
 #include "memops\memops.h"
 
+#define USETX 'x'
+#define USETY 'y'
+#define ULFOL 'l'
+#define UPFOL 'p'
+#define USTOP 's'
+#define UENGS 'e'
+#define UMAXE 'r'
+#define PAEND '\r'
+
+
 void uart_sendEngPacket(uint8_t header, uint8_t lEngine, uint8_t rEngine);
 void uart_sendPosPacket(uint8_t header, float data);
 void uart_sendPacket(uint8_t* data, uint8_t count);

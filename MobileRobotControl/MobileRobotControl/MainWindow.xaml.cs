@@ -2,10 +2,12 @@
 using System.IO.Ports;
 using System.Text;
 using System.Windows;
-using MobileRobotControl.RobotPacket;
-using MobileRobotControl.RobotStatusUpdate;
 using System.Diagnostics;
 using System.Security.Permissions;
+using MobileRobotControl.Components.Connection;
+using MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets;
+using MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.RecPacketSplitter;
+using MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.StatusUpdateRequest;
 
 namespace MobileRobotControl
 {
@@ -18,7 +20,7 @@ namespace MobileRobotControl
         private Connection_Window connectionWindow;
         private RS232 rs232;
         private RobotStatusUpdateFactory robotStatusUpdateFactory;
-        private PacketSplitter packetSplitter;
+        private RecPacketSplitter packetSplitter;
         
         delegate void UpdatePosDelegate(float value);
         private UpdatePosDelegate posUpdateDelegate;
@@ -60,19 +62,19 @@ namespace MobileRobotControl
         {
             try
             {
-                rs232.close();
+                rs232.Close();
             }
             catch{}
 
             rs232 = new RS232();
             rs232.PortOpen(port);
-            packetSplitter = new PacketSplitter(rs232);
-            packetSplitter.PacketReceived += packetReceived;
+            packetSplitter = new RecPacketSplitter(rs232);
+            packetSplitter.PacketReceivedEvent += packetReceived;
         }
 
-        private void packetReceived(string data)
+        private void packetReceived(object sender, string data)
         {
-            IRobotPacket packet = new RobotPacket.RobotPacket(data);
+            IRecRobotPacket packet = new RecRobotPacket(data);
             IRobotStatusUpdate robotStatusUpdate = robotStatusUpdateFactory.GetRobotStatusUpdate(packet);
             robotStatusUpdate.Execute(this);
         }
@@ -136,5 +138,12 @@ namespace MobileRobotControl
             }
         }
 #endregion
+
+        private void SetXButton_Click(object sender, RoutedEventArgs e)
+        {
+            int a = 111;
+            string b = "x" + a.ToString();
+            rs232.Send(b);
+        }
     }
 }

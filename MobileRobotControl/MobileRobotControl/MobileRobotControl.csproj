@@ -65,21 +65,30 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ComponentClasses\RS232.cs" />
+    <Compile Include="Components\Connection\IConnector.cs" />
+    <Compile Include="Components\Connection\RS232.cs" />
+    <Compile Include="Components\RobotCommunication\RobotCommands\RobotStopCommand.cs" />
+    <Compile Include="Components\RobotCommunication\RobotCommands\LineFollowCommand.cs" />
+    <Compile Include="Components\RobotCommunication\RobotCommands\PointFollowCommand.cs" />
+    <Compile Include="Components\RobotCommunication\RobotCommands\SetGoalYCommand.cs" />
+    <Compile Include="Components\RobotCommunication\RobotCommands\IRobotCommand.cs" />
+    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\RecPacketSplitter\IRecPacketSplitter.cs" />
+    <Compile Include="Components\RobotCommunication\RobotCommands\SetGoalXCommand.cs" />
+    <Compile Include="Events\ConnectorEventArgs.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="RobotPacket\IRobotPacket.cs" />
-    <Compile Include="RobotPacket\PacketHeaders.cs" />
-    <Compile Include="RobotPacket\PacketSplitter.cs" />
-    <Compile Include="RobotPacket\RobotPacket.cs" />
-    <Compile Include="RobotStatusUpdate\AngleUpdate.cs" />
-    <Compile Include="RobotStatusUpdate\EngineFillUpdate.cs" />
-    <Compile Include="RobotStatusUpdate\IRobotStatusUpdate.cs" />
-    <Compile Include="RobotStatusUpdate\RobotStatusUpdateFactory.cs" />
-    <Compile Include="RobotStatusUpdate\XPosUpdate.cs" />
-    <Compile Include="RobotStatusUpdate\YPosUpdate.cs" />
+    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\IRecRobotPacket.cs" />
+    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\RecPacketHeaders.cs" />
+    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\RecPacketSplitter\RecPacketSplitter.cs" />
+    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\RecRobotPacket.cs" />
+    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\AngleUpdate.cs" />
+    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\EngineFillUpdate.cs" />
+    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\IRobotStatusUpdate.cs" />
+    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\RobotStatusUpdateFactory.cs" />
+    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\XPosUpdate.cs" />
+    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\YPosUpdate.cs" />
     <Compile Include="Windows\Connection_Window.xaml.cs">
       <DependentUpon>Windows\Connection_Window.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -112,7 +121,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Components\RobotCommunication\RobotCommands\RobotCommandSender\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

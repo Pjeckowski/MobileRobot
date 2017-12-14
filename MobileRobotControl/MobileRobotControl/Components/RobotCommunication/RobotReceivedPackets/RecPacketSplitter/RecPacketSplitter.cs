@@ -1,28 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using MobileRobotControl.Components.Connection;
 
-namespace MobileRobotControl.RobotPacket
+namespace MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.RecPacketSplitter
 {
-    class PacketSplitter
+    public class RecPacketSplitter : IRecPacketSplitter
     {
-        public delegate void PacketReceivedDelegate(string data);
-        public PacketReceivedDelegate PacketReceived;
-        
-        private RS232 rs232Connection;
+        public event EventHandler<string> PacketReceivedEvent;
+        private IConnector connection;
         private string packetPart = string.Empty;
         List<string> validPackets = new List<string>();
 
-        public PacketSplitter(RS232 connection)
+        public RecPacketSplitter(IConnector connection)
         {
-            rs232Connection = connection;
-            rs232Connection.DataReceived += rs232DataReceived;
+            this.connection = connection;
+            this.connection.DataReceivedEvent += connectionDataReceived;
         }
 
-        private void rs232DataReceived(string data)
+        private void connectionDataReceived(object sender, string data)
         {
             string[] packetList = Regex.Split(data, @"(?=P)");
             int lenght = packetList.Length;
@@ -48,13 +44,15 @@ namespace MobileRobotControl.RobotPacket
 
             foreach (var p in validPackets)
             {
-                if (null != PacketReceived)
+                if (null != PacketReceivedEvent)
                 {
-                    PacketReceived(p.Replace("P","").Replace("\r", ""));
+                    PacketReceivedEvent(this, p.Replace("P","").Replace("\r", ""));
                 }
             }
 
             validPackets.Clear();
         }
+
+      
     }
 }

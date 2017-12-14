@@ -42,6 +42,26 @@
                     
                 </DockPanel>
             </GroupBox>
+            <GroupBox Grid.Column="1" Header = "GroupBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5,5,5,5">
+                <DockPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="3*"/>
+                        </Grid.RowDefinitions>
+                        <Button x:Name="SetXButton" Grid.Column="0"  Content="Send It" Margin="2,12,2,12" MaxHeight="60" MaxWidth="160" Click="SetXButton_Click"   />
+
+                    </Grid>
+                </DockPanel>
+                
+            </GroupBox>
         </Grid>
         
     </DockPanel>

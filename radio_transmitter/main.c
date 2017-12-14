@@ -27,6 +27,7 @@ void dataWorkout1();
 uint8_t getNextPosRequest();
 void uartRequestCollect(uint8_t data);
 void prepareNextTransmission();
+void uartPacketWorkout(uint8_t* packet, uint8_t count);
 
 volatile uint8_t irCounter;
 enum nrfState {REC, WFBT, WFBR, TRA1, TRA2, WFTR, WFRE};
@@ -48,6 +49,7 @@ double goalPosX = 0, goalPosY = 0;
 //uart connection
 volatile uint8_t uartHeaderReceived = 0;
 volatile uint8_t uartSendBufor[5];
+uint8_t uartRecBufor[100];
 uint8_t uartRecCounter = 0, uartTransmitTrigger = 0, uartFlushTimer = 0, isPOSU = 1;
 volatile uint8_t posuPosition = 0;
 
@@ -102,6 +104,11 @@ ISR(TIMER0_OVF_vect)
 		uartFlushTimer = 0;
 		uartHeaderReceived = 0;
 	}
+}
+
+ISR(USART_RXC_vect)
+{
+	uartRequestCollect(uart_receive());
 }
 
 void prepareNextTransmission()
@@ -283,55 +290,35 @@ void uartRequestCollect(uint8_t data)
 {
 	if(uartHeaderReceived)
 	{
-		if(uartRecCounter < 5)
-		{
-			if(data == '\r')
-			{
-				uartRecCounter = 0;
-				uartTransmitTrigger = 1;
-				uartFlushTimer = 0;
-			}
-			else
-			{
-				uartSendBufor[uartRecCounter] = data;
-				uartRecCounter++;
-				if(0 == (uartFlushTimer = irCounter + 5))
-				{
-					uartFlushTimer ++;
-				}
-			}
-		}
-		else
-		{
-			uartRecCounter = 0;
-			uartHeaderReceived = 0;
-			uartFlushTimer = 0;
-		}
+	     if(data == '\r')
+	     {
+	    	 uartPacketWorkout(uartRecBufor, uartRecCounter);
+	    	 uartRecCounter = 0;
+	    	 uartHeaderReceived = 0;
+	     }
+	     else
+	     {
+	    	 uartRecCounter ++;
+	    	 uartRecBufor[uartRecCounter] = data - 48;
+	     }
 	}
 	else
 	{
 		if(data == POSU)
-		{
 			isPOSU = 1;
-		}
 		else
 		{
-			int i;
-			for(i = 0; i < headerCollectionLenght; i++)
-			{
-				if(data == headerCollection[i])
-				{
-					uartHeaderReceived = 1;
-					uartSendBufor[0] = data;
-					uartRecCounter = 1;
-					if(0 == (uartFlushTimer = irCounter + 5))
-					{
-						uartFlushTimer ++;
-					}
-					break;
-				}
-			}
+			uartRecBufor[0] = data;
+			uartHeaderReceived = 1;
 		}
+	}
+}
+
+void uartPacketWorkout(uint8_t* packet, uint8_t count)
+{
+	if(packet[1] == 1 && packet[2] == 1)
+	{
+		PORTD ^= (1 << PD6);
 	}
 }
 

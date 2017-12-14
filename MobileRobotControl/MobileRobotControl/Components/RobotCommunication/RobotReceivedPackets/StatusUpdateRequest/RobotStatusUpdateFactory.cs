@@ -1,31 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MobileRobotControl.RobotPacket;
 
-namespace MobileRobotControl.RobotStatusUpdate
+namespace MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.StatusUpdateRequest
 {
     public class RobotStatusUpdateFactory
     {
-        public IRobotStatusUpdate GetRobotStatusUpdate(IRobotPacket packet)
+        public IRobotStatusUpdate GetRobotStatusUpdate(IRecRobotPacket packet)
         {
             switch (packet.Header)
             {
-                case PacketHeaders.AUpdate:
+                case RecPacketHeaders.AUpdate:
                 {
                     return new AngleUpdate(packet.Content);
                 }
-                case PacketHeaders.EFUpdate:
+                case RecPacketHeaders.EFUpdate:
                 {
                     return new EngineFillUpdate(packet.Content);
                 }
-                case PacketHeaders.XUpdate:
+                case RecPacketHeaders.XUpdate:
                 {
                     return new XPosUpdate(packet.Content);
                 }
-                case  PacketHeaders.YUpdate:
+                case RecPacketHeaders.YUpdate:
                 {
                     return new YPosUpdate(packet.Content);
                 }

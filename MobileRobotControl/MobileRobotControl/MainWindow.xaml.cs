@@ -2,9 +2,10 @@
 using System.IO.Ports;
 using System.Text;
 using System.Windows;
-using System.Diagnostics;
-using System.Security.Permissions;
+using System.Windows.Input;
 using MobileRobotControl.Components.Connection;
+using MobileRobotControl.Components.RobotCommunication.PacketDescriber;
+using MobileRobotControl.Components.RobotCommunication.RobotCommands;
 using MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets;
 using MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.RecPacketSplitter;
 using MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.StatusUpdateRequest;
@@ -20,7 +21,8 @@ namespace MobileRobotControl
         private Connection_Window connectionWindow;
         private RS232 rs232;
         private RobotStatusUpdateFactory robotStatusUpdateFactory;
-        private RecPacketSplitter packetSplitter;
+        private IRecPacketSplitter packetSplitter;
+        private IPacketDescription packetDescription;
         
         delegate void UpdatePosDelegate(float value);
         private UpdatePosDelegate posUpdateDelegate;
@@ -30,10 +32,13 @@ namespace MobileRobotControl
         private UpdateEngDelegate engUpdateDelegate;
         private object[] delObjects = new object[2];
 
+        private IRobotCommand RobotCommand;
+
         public MainWindow()
         {
             InitializeComponent();
             robotStatusUpdateFactory = new RobotStatusUpdateFactory();
+            packetDescription = new PacketDescription("P","\r");
 
             robotPosXLabel.Content = sizeof(float).ToString();
             byte[] b = {129, 13, 255, 255, 255};
@@ -44,9 +49,6 @@ namespace MobileRobotControl
             {
                 Debug.WriteLine(a);
             }
-
-
-            
 
         }
 
@@ -68,7 +70,7 @@ namespace MobileRobotControl
 
             rs232 = new RS232();
             rs232.PortOpen(port);
-            packetSplitter = new RecPacketSplitter(rs232);
+            packetSplitter = new RecPacketSplitter(packetDescription, rs232);
             packetSplitter.PacketReceivedEvent += packetReceived;
         }
 
@@ -141,9 +143,11 @@ namespace MobileRobotControl
 
         private void SetXButton_Click(object sender, RoutedEventArgs e)
         {
-            int a = 111;
-            string b = "x" + a.ToString();
-            rs232.Send(b);
+            RobotCommand = new SetGoalXCommand((float) 40.0, packetDescription);
+            IRobotCommand command2 = new SetEnginesCommand(49,49,packetDescription);
+
+            PosXLabel.Content = command2.Content;
+            RobotCommand.Execute(rs232);
         }
     }
 }

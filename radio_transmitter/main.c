@@ -28,6 +28,7 @@ uint8_t getNextPosRequest();
 void uartRequestCollect(uint8_t data);
 void prepareNextTransmission();
 void uartPacketWorkout(uint8_t* packet, uint8_t count);
+float getXYValue(uint8_t* packet, uint8_t count);
 
 volatile uint8_t irCounter;
 enum nrfState {REC, WFBT, WFBR, TRA1, TRA2, WFTR, WFRE};
@@ -131,6 +132,7 @@ void prepareNextTransmission()
 					radioSendBufor[i] = uartSendBufor[i];
 					transmitTrigger = 1;
 				}
+				uartTransmitTrigger = 0;
 				lastSent = UART;
 			}
 		}
@@ -143,6 +145,7 @@ void prepareNextTransmission()
 					radioSendBufor[i] = uartSendBufor[i];
 					transmitTrigger = 1;
 				}
+				uartTransmitTrigger = 0;
 				lastSent = UART;
 			}
 			else
@@ -298,27 +301,108 @@ void uartRequestCollect(uint8_t data)
 	     }
 	     else
 	     {
+	    	 uartRecBufor[uartRecCounter] = data;
 	    	 uartRecCounter ++;
-	    	 uartRecBufor[uartRecCounter] = data - 48;
 	     }
 	}
 	else
 	{
-		if(data == POSU)
-			isPOSU = 1;
-		else
-		{
-			uartRecBufor[0] = data;
+		if(data == 'P')
 			uartHeaderReceived = 1;
-		}
 	}
 }
 
 void uartPacketWorkout(uint8_t* packet, uint8_t count)
 {
-	if(packet[1] == 1 && packet[2] == 1)
+
+	switch (packet[0])
 	{
-		PORTD ^= (1 << PD6);
+		case USETX:
+		{
+			float val;
+			val = getXYValue(packet, count);
+			if(val == 40)
+				PORTD ^= (1 << PD6);
+			uartSendBufor[0] = SETGX;
+			getBytes(val, uartSendBufor + 1);
+			uartTransmitTrigger = 1;
+
+			break;
+		}
+		case USETY:
+		{
+			float val;
+			val = getXYValue(packet, count);
+			uartSendBufor[0] = SETGY;
+			getBytes(val, uartSendBufor + 1);
+			uartTransmitTrigger = 1;
+			break;
+		}
+		case UENGS:
+		{
+			uartSendBufor[0] = SETEF;
+			uartSendBufor[1] = packet[2];
+			uartSendBufor[2] = packet[4];
+			if(packet[1] != 0)
+				uartSendBufor[1] |= 0x80;
+			if(packet[3] != 0)
+				uartSendBufor[2] |= 0x80;
+			uartTransmitTrigger = 1;
+
+		}
+		case ULFOL:
+		{
+			uartSendBufor[0] = FOLIN;
+			uartTransmitTrigger = 1;
+			break;
+		}
+		case UPFOL:
+		{
+			uartSendBufor[0] = FOTOP;
+			uartTransmitTrigger = 1;
+			break;
+		}
+		case USTOP:
+		{
+			uartSendBufor[0] = RSTOP;
+			uartTransmitTrigger = 1;
+			break;
+		}
+		default:
+		{
+			break;
+		}
+	}
+}
+
+float getXYValue(uint8_t* packet, uint8_t count)
+{
+	float value = 0;
+	int multiply = 1;
+
+	if(packet[1] == '-')
+	{
+
+		int i;
+		for(i = count - 1; i > 1; i--)
+		{
+			value += (int)((packet[i] - 48) * multiply);
+			multiply *= 10;
+		}
+
+		return -(value/100);
+	}
+	else
+	{
+
+		int i;
+		for(i = count - 1; i > 0; i--)
+		{
+			value += (int)((packet[i] - 48) * multiply);
+			multiply *= 10;
+		}
+
+		return (value/100);
 	}
 }
 

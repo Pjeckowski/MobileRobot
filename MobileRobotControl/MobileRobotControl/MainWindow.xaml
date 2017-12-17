@@ -29,7 +29,7 @@
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="3*"/>
                         </Grid.RowDefinitions>
-                        <Label Content="Pos X:" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <Label x:Name="PosXLabel" Content="Pos X:" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" />
                         <Label x:Name="robotPosXLabel" Grid.Row="0" Content="0.0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         <Label Content="Pos Y: " Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         <Label x:Name="robotPosYLabel" Grid.Row="0" Content="0.0" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center"/>

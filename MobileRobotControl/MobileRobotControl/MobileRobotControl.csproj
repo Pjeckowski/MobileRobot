@@ -67,9 +67,12 @@
     </Compile>
     <Compile Include="Components\Connection\IConnector.cs" />
     <Compile Include="Components\Connection\RS232.cs" />
+    <Compile Include="Components\RobotCommunication\PacketDescription\IPacketDescription.cs" />
+    <Compile Include="Components\RobotCommunication\PacketDescription\PacketDescription.cs" />
     <Compile Include="Components\RobotCommunication\RobotCommands\RobotStopCommand.cs" />
     <Compile Include="Components\RobotCommunication\RobotCommands\LineFollowCommand.cs" />
     <Compile Include="Components\RobotCommunication\RobotCommands\PointFollowCommand.cs" />
+    <Compile Include="Components\RobotCommunication\RobotCommands\SetEnginesCommand.cs" />
     <Compile Include="Components\RobotCommunication\RobotCommands\SetGoalYCommand.cs" />
     <Compile Include="Components\RobotCommunication\RobotCommands\IRobotCommand.cs" />
     <Compile Include="Components\RobotCommunication\RobotReceivedPackets\RecPacketSplitter\IRecPacketSplitter.cs" />
@@ -121,9 +124,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Components\RobotCommunication\RobotCommands\RobotCommandSender\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

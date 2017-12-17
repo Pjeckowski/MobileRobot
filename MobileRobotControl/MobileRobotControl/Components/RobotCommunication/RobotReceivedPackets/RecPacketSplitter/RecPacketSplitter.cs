@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using MobileRobotControl.Components.Connection;
+using MobileRobotControl.Components.RobotCommunication.PacketDescriber;
 
 namespace MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.RecPacketSplitter
 {
@@ -9,34 +10,38 @@ namespace MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.
     {
         public event EventHandler<string> PacketReceivedEvent;
         private IConnector connection;
+        private IPacketDescription packetDescription;
+
         private string packetPart = string.Empty;
         List<string> validPackets = new List<string>();
 
-        public RecPacketSplitter(IConnector connection)
+        public RecPacketSplitter(IPacketDescription packetDescription, IConnector connection)
         {
             this.connection = connection;
-            this.connection.DataReceivedEvent += connectionDataReceived;
+            this.connection.DataReceivedEvent += ConnectionDataReceived;
+            this.packetDescription = packetDescription;
         }
 
-        private void connectionDataReceived(object sender, string data)
+        private void ConnectionDataReceived(object sender, string data)
         {
-            string[] packetList = Regex.Split(data, @"(?=P)");
+            data = data.Replace(packetDescription.PacketStart, ":" + packetDescription.PacketStart);
+            string[] packetList = Regex.Split(data, ":");
             int lenght = packetList.Length;
 
-            if (!packetList[0].Contains("P") && !packetPart.Equals(string.Empty))
+            if (!packetList[0].Contains(packetDescription.PacketStart) && !packetPart.Equals(string.Empty))
             {
                 packetList[0] = packetPart + packetList[0];
                 packetPart = string.Empty;
             }
 
-            if (!packetList[lenght - 1].Contains("\r") && packetList[lenght - 1].Contains("P"))
+            if (!packetList[lenght - 1].Contains(packetDescription.PacketEnd) && packetList[lenght - 1].Contains(packetDescription.PacketStart))
             {
                 packetPart = packetList[lenght - 1];
             }
 
             foreach (var s in packetList)
             {
-                if (s.Contains("P") && s.Contains("\r"))
+                if (s.Contains(packetDescription.PacketStart) && s.Contains(packetDescription.PacketEnd))
                 {
                     validPackets.Add(s);
                 }

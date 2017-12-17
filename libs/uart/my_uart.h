@@ -18,13 +18,13 @@
 #include "robot\engine.h"
 #include "memops\memops.h"
 
-#define USETX 'x'
-#define USETY 'y'
-#define ULFOL 'l'
-#define UPFOL 'p'
-#define USTOP 's'
-#define UENGS 'e'
-#define UMAXE 'r'
+#define USETX 'X'
+#define USETY 'Y'
+#define ULFOL 'L'
+#define UPFOL 'P'
+#define USTOP 'S'
+#define UENGS 'E'
+#define UMAXE 'R'
 #define PAEND '\r'
 
 

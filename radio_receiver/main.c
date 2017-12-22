@@ -225,7 +225,7 @@ uint8_t dataWorkout(uint8_t* data)
 		}
 		case SETGX:
 		{
-			goalPosX = getValFromBytes(data + 1);
+			posX = goalPosX = getValFromBytes(data + 1);
 			return 0;
 		}
 		case SETGY:

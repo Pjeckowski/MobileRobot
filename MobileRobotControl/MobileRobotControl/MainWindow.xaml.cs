@@ -2,7 +2,9 @@
 using System.IO.Ports;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using MobileRobotControl.Components.Connection;
 using MobileRobotControl.Components.RobotCommunication.PacketDescriber;
 using MobileRobotControl.Components.RobotCommunication.RobotCommands;
@@ -146,8 +148,14 @@ namespace MobileRobotControl
             RobotCommand = new SetGoalXCommand((float) 40.0, packetDescription);
             IRobotCommand command2 = new SetEnginesCommand(49,49,packetDescription);
 
-            PosXLabel.Content = command2.Content;
+            PosXLabel.Content = RobotCommand.Content;
             RobotCommand.Execute(rs232);
+        }
+
+        private void ConnectMenuItem_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            MenuItem lel = (MenuItem) sender;
+            lel.Foreground = new SolidColorBrush(Colors.AliceBlue);
         }
     }
 }

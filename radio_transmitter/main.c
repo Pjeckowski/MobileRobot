@@ -348,7 +348,7 @@ void uartPacketWorkout(uint8_t* packet, uint8_t count)
 			if(packet[3] != 0)
 				uartSendBufor[2] |= 0x80;
 			uartTransmitTrigger = 1;
-
+			break;
 		}
 		case ULFOL:
 		{

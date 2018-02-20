@@ -1,10 +1,13 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO.Ports;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using MobileRobotControl.Components;
 using MobileRobotControl.Components.Connection;
 using MobileRobotControl.Components.RobotCommunication.PacketDescriber;
 using MobileRobotControl.Components.RobotCommunication.RobotCommands;
@@ -35,6 +38,9 @@ namespace MobileRobotControl
         private object[] delObjects = new object[2];
 
         private IRobotCommand RobotCommand;
+        private SimpleRobotControl _robotControl;
+
+        private bool isManualControl;
 
         public MainWindow()
         {
@@ -51,7 +57,9 @@ namespace MobileRobotControl
             {
                 Debug.WriteLine(a);
             }
-
+            RobotControlDockPanel.Children.Remove(ManualGrid);
+            _robotControl = new SimpleRobotControl();
+            SendControl();
         }
 
         private void ConnectMenuItem_Click(object sender, RoutedEventArgs e)
@@ -156,6 +164,117 @@ namespace MobileRobotControl
         {
             MenuItem lel = (MenuItem) sender;
             lel.Foreground = new SolidColorBrush(Colors.AliceBlue);
+        }
+
+        private void SetEnginesButton_Click(object sender, RoutedEventArgs e)
+        {
+            RobotCommand = new SetEnginesCommand(Convert.ToInt32(LeftEngineTextBox.Text), Convert.ToInt32(RightEngineTextBox.Text), packetDescription);
+            RobotCommand.Execute(rs232);
+        }
+
+        private async void ManualControlButton_Click(object sender, RoutedEventArgs e)
+        {
+            RobotControlDockPanel.Children.Add(ManualGrid);
+            int ssize = (int)AutoGrid.ActualHeight / 20;
+            while (AutoGrid.ActualHeight > 0)
+            {
+                if (AutoGrid.ActualHeight < 2 * ssize)
+                {
+                    AutoGrid.Height = 0;
+                    ManualGrid.Height = Double.NaN;
+                }
+                else
+                {
+                    AutoGrid.Height = (int)AutoGrid.ActualHeight - ssize;
+                    ManualGrid.Height = ManualGrid.ActualHeight + ssize;
+                }
+                    
+
+                await Task.Delay(1);
+            }
+            RobotControlDockPanel.Children.Remove(AutoGrid);
+            isManualControl = true;
+        }
+
+        private async void AutoControlButton_Click(object sender, RoutedEventArgs e)
+        {
+            RobotControlDockPanel.Children.Remove(ManualGrid);
+            RobotControlDockPanel.Children.Add(AutoGrid);
+            RobotControlDockPanel.Children.Add(ManualGrid);
+            int ssize = (int)ManualGrid.ActualHeight / 20;
+            while (ManualGrid.ActualHeight > 1)
+            {
+                if (ManualGrid.ActualHeight < 2 * ssize)
+                {
+                    
+                    ManualGrid.Height = 1;
+                }
+                else
+                {
+                    robotAngleLabel.Content = AutoGrid.Height = (int)AutoGrid.ActualHeight + ssize;
+                    ManualGrid.Height = ManualGrid.ActualHeight - ssize;
+                }
+
+                await Task.Delay(1);
+            }
+            RobotControlDockPanel.Children.Remove(ManualGrid);
+            AutoGrid.Height = Double.NaN;
+            isManualControl = false;
+        }
+
+        private async void SendControl()
+        {
+            while (true)
+            {
+                if (rs232 != null && rs232.Isopen() && isManualControl)
+                {
+                    var enginesFill = _robotControl.EnginesFill;
+                    RobotCommand = new SetEnginesCommand(enginesFill.LeftEngineFill, enginesFill.RightEngineFill, packetDescription);
+                    RobotCommand.Execute(rs232);
+                }
+
+                await Task.Delay(200);
+            }
+        }
+
+        private void ControlTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Up)
+            {
+                _robotControl.aUp = true;
+            }
+            else if (e.Key == Key.Down)
+            {
+                _robotControl.aDown = true;
+            }
+            else if (e.Key == Key.Left)
+            {
+                _robotControl.aLeft = true;
+            }
+            else if (e.Key == Key.Right)
+            {
+                _robotControl.aRight = true;
+            }
+        }
+
+        private void ControlTextBox_PreviewKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Up)
+            {
+                _robotControl.aUp = false;
+            }
+            else if (e.Key == Key.Down)
+            {
+                _robotControl.aDown = false;
+            }
+            else if (e.Key == Key.Left)
+            {
+                _robotControl.aLeft = false;
+            }
+            else if (e.Key == Key.Right)
+            {
+                _robotControl.aRight = false;
+            }
         }
     }
 }

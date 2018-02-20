@@ -14,19 +14,17 @@
 #include <String.h>
 
 #define Control_led PD6
-#define IRQ 	PA0
-#define IRQPIN	PINA
 #define time1ms 255 -31
 #define UART 	1
 #define POSUB	0
 
 void errorInform();
 void dataWorkout(uint8_t data[], uint8_t count);
-void radioTra();
+void radioTransmit();
 void dataWorkout1();
-uint8_t getNextPosRequest();
+uint8_t getNextPositionRequest();
 void uartRequestCollect(uint8_t data);
-void prepareNextTransmission();
+void radioPrepareNextTransmission();
 void uartPacketWorkout(uint8_t* packet, uint8_t count);
 float getXYValue(uint8_t* packet, uint8_t count);
 
@@ -40,8 +38,8 @@ uint8_t nextCPTimer = 0;
 char *table = "a";
 
 //radio data
-volatile uint8_t radioSendBufor[5];
-volatile uint8_t radioRecBufor[5];
+uint8_t radioSendBufor[5];
+uint8_t radioRecBufor[5];
 
 //radio positions
 double posX = 0, posY = 0, angle = 0;
@@ -49,10 +47,10 @@ double goalPosX = 0, goalPosY = 0;
 
 //uart connection
 volatile uint8_t uartHeaderReceived = 0;
-volatile uint8_t uartSendBufor[5];
+uint8_t uartSendBufor[5];
 uint8_t uartRecBufor[100];
-uint8_t uartRecCounter = 0, uartTransmitTrigger = 0, uartFlushTimer = 0, isPOSU = 1;
-volatile uint8_t posuPosition = 0;
+uint8_t uartRecCounter = 0, uartTransmitTrigger = 0, uartFlushTimer = 0, isRobotPositionSubscribed = 1;
+volatile uint8_t positionRequest = 0;
 
 volatile uint16_t counter=0;
 float a = 6000;
@@ -74,19 +72,22 @@ int main()
 	init_SPI(1,0);
 	init_radio(0, 0, 5);
 
-	if(get_reg(STATUS) == 0b00001110)
+	if(radio_ReadRegister(STATUS) == 0b00001110)
 		PORTD = 0b01000000;
-	_delay_ms(3000);
 
+	_delay_ms(3000);
 	PORTD = 0b00000000;
 	radioRecBufor[0] = 0;
 
 	uart_init();
+	table = "Initialization";
+	uart_sendString(table);
+	uart_sendByteAsChar(radio_ReadRegister(STATUS));
 
 	while(1)
 	{
-		prepareNextTransmission();
-		radioTra();
+		radioPrepareNextTransmission();
+		radioTransmit();
 	}
 }
 
@@ -99,7 +100,7 @@ ISR(TIMER0_OVF_vect)
 	{
 		counter = 0;
 	}
-	if(0!= uartFlushTimer && irCounter == uartFlushTimer)
+	if(0 != uartFlushTimer && irCounter == uartFlushTimer)
 	{
 		uartRecCounter = 0;
 		uartFlushTimer = 0;
@@ -112,15 +113,100 @@ ISR(USART_RXC_vect)
 	uartRequestCollect(uart_receive());
 }
 
-void prepareNextTransmission()
+void uartRequestCollect(uint8_t data)
+{
+	if(uartHeaderReceived)
+	{
+	     if(data == '\r')
+	     {
+	    	 uartPacketWorkout(uartRecBufor, uartRecCounter);
+	    	 uartRecCounter = 0;
+	    	 uartHeaderReceived = 0;
+	     }
+	     else
+	     {
+	    	 uartRecBufor[uartRecCounter] = data;
+	    	 uartRecCounter ++;
+	     }
+	}
+	else
+	{
+		if(data == 'P')
+			uartHeaderReceived = 1;
+	}
+}
+
+void uartPacketWorkout(uint8_t* packet, uint8_t count)
+{
+	switch (packet[0])
+	{
+		case USETX:
+		{
+			float val;
+			val = getXYValue(packet, count);
+			if(val == 40)
+				PORTD ^= (1 << PD6);
+			uartSendBufor[0] = SETGX;
+			getBytes(val, uartSendBufor + 1);
+			uartTransmitTrigger = 1;
+			break;
+		}
+		case USETY:
+		{
+			float val;
+			val = getXYValue(packet, count);
+			uartSendBufor[0] = SETGY;
+			getBytes(val, uartSendBufor + 1);
+			uartTransmitTrigger = 1;
+			break;
+		}
+		case UENGS:
+		{
+			PORTD ^= (1 << PD6);
+			uartSendBufor[0] = SETEF;
+			uartSendBufor[1] = packet[2];
+			uartSendBufor[2] = packet[4];
+			if(packet[1] != 0)
+				uartSendBufor[1] |= 0x80;
+			if(packet[3] != 0)
+				uartSendBufor[2] |= 0x80;
+			uartTransmitTrigger = 1;
+			break;
+		}
+		case ULFOL:
+		{
+			uartSendBufor[0] = FOLIN;
+			uartTransmitTrigger = 1;
+			break;
+		}
+		case UPFOL:
+		{
+			uartSendBufor[0] = FOTOP;
+			uartTransmitTrigger = 1;
+			break;
+		}
+		case USTOP:
+		{
+			uartSendBufor[0] = RSTOP;
+			uartTransmitTrigger = 1;
+			break;
+		}
+		default:
+		{
+			break;
+		}
+	}
+}
+
+void radioPrepareNextTransmission()
 {
 	if(radioBusy == 0)
 	{
-		if(1 == uartTransmitTrigger && 1 == isPOSU)
+		if(1 == uartTransmitTrigger && 1 == isRobotPositionSubscribed)
 		{
 			if(lastSent == UART)
 			{
-				radioSendBufor[0] = getNextPosRequest();
+				radioSendBufor[0] = getNextPositionRequest();
 				lastSent = POSUB;
 				transmitTrigger = 1;
 			}
@@ -149,9 +235,9 @@ void prepareNextTransmission()
 				lastSent = UART;
 			}
 			else
-				if(isPOSU)
+				if(isRobotPositionSubscribed)
 				{
-					radioSendBufor[0] = getNextPosRequest();
+					radioSendBufor[0] = getNextPositionRequest();
 					lastSent = POSUB;
 					transmitTrigger = 1;
 				}
@@ -167,7 +253,7 @@ void prepareNextTransmission()
 		}
 }
 
-void radioTra()
+void radioTransmit()
 {
 	switch (RadioState)
 	{
@@ -199,11 +285,11 @@ void radioTra()
 		}
 		case WFTR:
 		{
-			if((!(IRQPIN & (1 << IRQ))) || irCounter == radio_actionTimer)
+			if(radio_isInterruptRequest() || irCounter == radio_actionTimer)
 			{
-				if(get_reg(STATUS) == 0b00101110)//if transmition succesfull
+				if(radio_wasTransmissionSuccessfull())
 				{
-					if(isRequest(radioSendBufor[0])) //if i want respond
+					if(isRequest(radioSendBufor[0]))
 					{
 						reset_radio();
 						radio_switchReceiver();
@@ -226,7 +312,7 @@ void radioTra()
 				{
 					if(irCounter == radio_actionTimer)
 					{
-						PORTB |= (1 << CE);
+						radio_startListenning();
 						radio_actionTimer = irCounter + 30;
 						RadioState = WFRE;
 					}
@@ -234,12 +320,12 @@ void radioTra()
 				}
 		case WFRE:
 				{
-					if((!(IRQPIN & (1 << IRQ))) || irCounter == radio_actionTimer)
+					if(radio_isInterruptRequest() || irCounter == radio_actionTimer)
 					{
-						PORTB &= ~(1 << CE);
-						if(get_reg(STATUS) == 0b01000000)//if receiving succesfull
+						radio_stopListenning();
+						if(radio_wasDataReceived())//if receiving succesfull
 						{
-							while(get_reg(STATUS) != 0b00001110)
+							while(!radio_isReceivingBuforEmpty())
 							{
 								radio_receive(radioRecBufor, 5);
 							}
@@ -289,92 +375,6 @@ void dataWorkout1()
 	uart_sendByteAsChar(radioRecBufor[0]);
 }
 
-void uartRequestCollect(uint8_t data)
-{
-	if(uartHeaderReceived)
-	{
-	     if(data == '\r')
-	     {
-	    	 uartPacketWorkout(uartRecBufor, uartRecCounter);
-	    	 uartRecCounter = 0;
-	    	 uartHeaderReceived = 0;
-	     }
-	     else
-	     {
-	    	 uartRecBufor[uartRecCounter] = data;
-	    	 uartRecCounter ++;
-	     }
-	}
-	else
-	{
-		if(data == 'P')
-			uartHeaderReceived = 1;
-	}
-}
-
-void uartPacketWorkout(uint8_t* packet, uint8_t count)
-{
-
-	switch (packet[0])
-	{
-		case USETX:
-		{
-			float val;
-			val = getXYValue(packet, count);
-			if(val == 40)
-				PORTD ^= (1 << PD6);
-			uartSendBufor[0] = SETGX;
-			getBytes(val, uartSendBufor + 1);
-			uartTransmitTrigger = 1;
-
-			break;
-		}
-		case USETY:
-		{
-			float val;
-			val = getXYValue(packet, count);
-			uartSendBufor[0] = SETGY;
-			getBytes(val, uartSendBufor + 1);
-			uartTransmitTrigger = 1;
-			break;
-		}
-		case UENGS:
-		{
-			uartSendBufor[0] = SETEF;
-			uartSendBufor[1] = packet[2];
-			uartSendBufor[2] = packet[4];
-			if(packet[1] != 0)
-				uartSendBufor[1] |= 0x80;
-			if(packet[3] != 0)
-				uartSendBufor[2] |= 0x80;
-			uartTransmitTrigger = 1;
-			break;
-		}
-		case ULFOL:
-		{
-			uartSendBufor[0] = FOLIN;
-			uartTransmitTrigger = 1;
-			break;
-		}
-		case UPFOL:
-		{
-			uartSendBufor[0] = FOTOP;
-			uartTransmitTrigger = 1;
-			break;
-		}
-		case USTOP:
-		{
-			uartSendBufor[0] = RSTOP;
-			uartTransmitTrigger = 1;
-			break;
-		}
-		default:
-		{
-			break;
-		}
-	}
-}
-
 float getXYValue(uint8_t* packet, uint8_t count)
 {
 	float value = 0;
@@ -406,33 +406,33 @@ float getXYValue(uint8_t* packet, uint8_t count)
 	}
 }
 
-uint8_t getNextPosRequest()
+uint8_t getNextPositionRequest()
 {
-	switch (posuPosition)
+	switch (positionRequest)
 	{
 		case GETX:
 		{
-			posuPosition  = GETY;
+			positionRequest  = GETY;
 			return GETX;
 		}
 		case GETY:
 		{
-			posuPosition = GETA;
+			positionRequest = GETA;
 			return GETY;
 		}
 		case GETA:
 		{
-			posuPosition = GETEF;
+			positionRequest = GETEF;
 			return GETA;
 		}
 		case GETEF:
 		{
-			posuPosition = GETX;
+			positionRequest = GETX;
 			return GETEF;
 		}
 		default:
 		{
-			posuPosition = GETX;
+			positionRequest = GETX;
 			return GETX;
 		}
 	}

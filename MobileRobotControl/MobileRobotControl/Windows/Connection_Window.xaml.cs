@@ -109,7 +109,7 @@ namespace MobileRobotControl
 
         private void SetOpen_Button_Click(object sender, RoutedEventArgs e)
         {
-            if (PortsDetected == true)
+            if (PortsDetected)
             {
                 if (Parity_CB.SelectedIndex == 1 && StopBits_CB.SelectedIndex == 1 && DataBits_CB.SelectedIndex == 1 && Speed_CB.SelectedIndex == 0)
                 {

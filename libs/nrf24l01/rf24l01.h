@@ -62,6 +62,9 @@
 #define DYNPD	    0x1C
 #define FEATURE	    0x1D
 
+#define IRQ 	PA0
+#define IRQPIN	PINA
+
 uint8_t dummy[5];
 enum nrfMode {TRAN, RECE};
 enum nrfMode RadioMode;
@@ -116,7 +119,7 @@ char send_SPI(char Data)
 
 ////////////////////////////// RADIO
 
-char get_reg(char Reg)
+char radio_ReadRegister(char Reg)
 {
 
 	PORTB &= ~(1 << CSN);
@@ -255,6 +258,36 @@ void init_radio(uint8_t MODE, uint8_t SPEED, uint8_t D_WIDTH)
 	_delay_ms(10);
 }
 
+int radio_isInterruptRequest()
+{
+	return !(IRQPIN & (1 << IRQ));
+}
+
+int radio_wasTransmissionSuccessfull()
+{
+	return radio_ReadRegister(STATUS) == 0b00101110;
+}
+
+int radio_wasDataReceived()
+{
+	return radio_ReadRegister(STATUS) == 0b01000000;
+}
+
+int radio_isReceivingBuforEmpty()
+{
+	return radio_ReadRegister(STATUS) == 0b00001110;
+}
+
+void radio_stopListenning()
+{
+	PORTB &= ~(1 << CE);
+}
+
+void radio_startListenning()
+{
+	PORTB |= (1 << CE);
+}
+
 void reset_radio()
 {
 	_delay_us(10);
@@ -291,7 +324,7 @@ void radio_preparePayload(uint8_t data[], uint8_t count)
 void radio_transmit()
 {
 	PORTB |= (1 << CE); //RF starts sending
-	_delay_us(200);
+	_delay_us(300);
 	PORTB &= ~(1 << CE); // RF stopps sending
 }
 

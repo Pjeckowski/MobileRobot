@@ -67,6 +67,8 @@
     </Compile>
     <Compile Include="Components\Connection\IConnector.cs" />
     <Compile Include="Components\Connection\RS232.cs" />
+    <Compile Include="Components\EnginesFill.cs" />
+    <Compile Include="Components\IRobotControl.cs" />
     <Compile Include="Components\RobotCommunication\PacketDescription\IPacketDescription.cs" />
     <Compile Include="Components\RobotCommunication\PacketDescription\PacketDescription.cs" />
     <Compile Include="Components\RobotCommunication\RobotCommands\RobotStopCommand.cs" />
@@ -77,6 +79,7 @@
     <Compile Include="Components\RobotCommunication\RobotCommands\IRobotCommand.cs" />
     <Compile Include="Components\RobotCommunication\RobotReceivedPackets\RecPacketSplitter\IRecPacketSplitter.cs" />
     <Compile Include="Components\RobotCommunication\RobotCommands\SetGoalXCommand.cs" />
+    <Compile Include="Components\SimpleRobotControl.cs" />
     <Compile Include="Events\ConnectorEventArgs.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

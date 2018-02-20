@@ -90,8 +90,8 @@
                     </DockPanel>
             </GroupBox>
             <GroupBox Grid.Column="1" Header = "Robot Control" FontWeight="ExtraBold" Foreground="#20b2ed" FontFamily="MV Boli" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5,5,5,5">
-                <DockPanel>
-                        <Grid>
+                <DockPanel x:Name="RobotControlDockPanel">
+                        <Grid x:Name="AutoGrid"   DockPanel.Dock="Top">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
@@ -103,7 +103,7 @@
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
-                            
+
                             <Button x:Name="SetXButton" Content="Set" Grid.Column="2" Background="#017bcd"   Margin="3,30,3,5" MaxHeight="60" MaxWidth="160" Click="SetXButton_Click" />
                             <Label Content="Goal Positions" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" Margin="-4,-6,0,0" />
                             <Label Content="pos X" Grid.Column="0"  Grid.Row="0" Margin="-4,8,0,0" />
@@ -115,8 +115,29 @@
                             <Button x:Name="PointFollowButton" Content="PointFollow" Grid.Column="0" Grid.Row="1" Background="#017bcd" Margin="3,30,3,5" MaxHeight="60" MaxWidth="160" Click="SetXButton_Click" />
                             <Button x:Name="LineFollowButton" Content="LineFollow" Grid.Column="1" Grid.Row="1" Background="#017bcd" Margin="3,30,3,5" MaxHeight="60" MaxWidth="160" Click="SetXButton_Click" />
                             <Button x:Name="StopButton" Content="Stop" Grid.Column="2" Grid.Row="1" Background="#017bcd" Margin="3,30,3,5" MaxHeight="60" MaxWidth="160" Click="SetXButton_Click" />
+
+                            <Button x:Name="SetEnginesButton" Content="Set Engines" Grid.Column="1" Grid.Row="2" Background="#017bcd" Margin="3,30,3,5" MaxHeight="60" MaxWidth="160" Click="SetEnginesButton_Click"/>
+                            <TextBox x:Name="LeftEngineTextBox" Grid.Column="0" Grid.Row="2" VerticalAlignment="Top" Background="#FF959595"/>
+                            <TextBox x:Name="RightEngineTextBox" Grid.Column="0" Grid.Row="2" VerticalAlignment="Bottom" Background="#FF959595" />
+
+                            <Button x:Name="ManualControlButton" Content="Man Control" Grid.Column="0" Grid.Row="3" Background="#017bcd" Margin="3,30,3,5" MaxHeight="60" MaxWidth="160" Click="ManualControlButton_Click"/>
                         </Grid>
-                </DockPanel>
+                    <Grid x:Name="ManualGrid" DockPanel.Dock="Top" Height ="Auto"  Background="AliceBlue">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                            <Button x:Name="AutoControlButton" Content="Auto Control" Grid.Column="0" Grid.Row="3" Background="#017bcd" Margin="3,30,3,5" MaxHeight="60" MaxWidth="160" Click="AutoControlButton_Click"/>
+                            <TextBox x:Name="ControlTextBox" Grid.Column="0" Grid.Row="0" Background="Blue" PreviewKeyDown="ControlTextBox_PreviewKeyDown" PreviewKeyUp="ControlTextBox_PreviewKeyUp"  />
+                        </Grid>
+                    </DockPanel>
                 
             </GroupBox>
         </Grid>

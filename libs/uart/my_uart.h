@@ -80,6 +80,8 @@ void uart_sendTable(uint8_t* table, uint8_t count)
 	}
 	uart_send('\r');
 }
+
+
 void uart_sendString(char* table)
 {
 	int i;
@@ -202,7 +204,7 @@ void uart_sendPosPacket(uint8_t header, float data)
 void uart_sendEngPacket(uint8_t header,uint8_t lEngine, uint8_t rEngine)
 {
 	uart_send('P');
-	uart_send('E');
+	uart_send(header);
 	uart_sendValueAsChar((int32_t) lEngine);
 	uart_send(',');
 	uart_sendValueAsChar((int32_t) rEngine);

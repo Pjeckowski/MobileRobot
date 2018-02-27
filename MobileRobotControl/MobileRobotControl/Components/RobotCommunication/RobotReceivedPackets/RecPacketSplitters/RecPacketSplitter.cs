@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using MobileRobotControl.Components.Connection;
-using MobileRobotControl.Components.RobotCommunication.PacketDescriber;
+using MobileRobotControl.Components.RobotCommunication.PacketDescriptions;
 
-namespace MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.RecPacketSplitter
+namespace MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.RecPacketSplitters
 {
     public class RecPacketSplitter : IRecPacketSplitter
     {
@@ -13,7 +13,7 @@ namespace MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.
         private IPacketDescription packetDescription;
 
         private string packetPart = string.Empty;
-        List<string> validPackets = new List<string>();
+        private List<string> validPackets = new List<string>();
 
         public RecPacketSplitter(IPacketDescription packetDescription, IConnector connection)
         {
@@ -51,7 +51,7 @@ namespace MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.
             {
                 if (null != PacketReceivedEvent)
                 {
-                    PacketReceivedEvent(this, p.Replace("P","").Replace("\r", ""));
+                    PacketReceivedEvent(this, p.Replace(packetDescription.PacketStart,"").Replace(packetDescription.PacketEnd, ""));
                 }
             }
 

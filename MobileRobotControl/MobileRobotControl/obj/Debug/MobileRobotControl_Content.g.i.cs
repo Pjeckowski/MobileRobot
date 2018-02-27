@@ -8,6 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("mainwindow.xaml.cs")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("graphic/adown_remake.jpg")]
 
 

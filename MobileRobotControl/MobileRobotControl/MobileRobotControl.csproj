@@ -67,27 +67,27 @@
     </Compile>
     <Compile Include="Components\Connection\IConnector.cs" />
     <Compile Include="Components\Connection\RS232.cs" />
-    <Compile Include="Components\EnginesFill.cs" />
-    <Compile Include="Components\IRobotControl.cs" />
-    <Compile Include="Components\RobotCommunication\PacketDescription\IPacketDescription.cs" />
-    <Compile Include="Components\RobotCommunication\PacketDescription\PacketDescription.cs" />
+    <Compile Include="Components\RobotControl\EnginesFill.cs" />
+    <Compile Include="Components\RobotControl\IRobotControl.cs" />
+    <Compile Include="Components\RobotCommunication\PacketDescriptions\IPacketDescription.cs" />
+    <Compile Include="Components\RobotCommunication\PacketDescriptions\PacketDescription.cs" />
     <Compile Include="Components\RobotCommunication\RobotCommands\RobotStopCommand.cs" />
     <Compile Include="Components\RobotCommunication\RobotCommands\LineFollowCommand.cs" />
     <Compile Include="Components\RobotCommunication\RobotCommands\PointFollowCommand.cs" />
     <Compile Include="Components\RobotCommunication\RobotCommands\SetEnginesCommand.cs" />
     <Compile Include="Components\RobotCommunication\RobotCommands\SetGoalYCommand.cs" />
     <Compile Include="Components\RobotCommunication\RobotCommands\IRobotCommand.cs" />
-    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\RecPacketSplitter\IRecPacketSplitter.cs" />
+    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\RecPacketSplitters\IRecPacketSplitter.cs" />
     <Compile Include="Components\RobotCommunication\RobotCommands\SetGoalXCommand.cs" />
-    <Compile Include="Components\SimpleRobotControl.cs" />
-    <Compile Include="Events\ConnectorEventArgs.cs" />
+    <Compile Include="Components\RobotControl\SimpleRobotControl.cs" />
+    <Compile Include="Components\RobotDataPresenters\IRobotDataPresenter.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Components\RobotCommunication\RobotReceivedPackets\IRecRobotPacket.cs" />
     <Compile Include="Components\RobotCommunication\RobotReceivedPackets\RecPacketHeaders.cs" />
-    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\RecPacketSplitter\RecPacketSplitter.cs" />
+    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\RecPacketSplitters\RecPacketSplitter.cs" />
     <Compile Include="Components\RobotCommunication\RobotReceivedPackets\RecRobotPacket.cs" />
     <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\AngleUpdate.cs" />
     <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\EngineFillUpdate.cs" />
@@ -127,7 +127,34 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="graphic\adown.jpg" />
+    <Resource Include="graphic\adown_active.jpg" />
+    <Resource Include="graphic\al.jpg" />
+    <Resource Include="graphic\al_active.jpg" />
+    <Resource Include="graphic\ar.jpg" />
+    <Resource Include="graphic\ar_active.jpg" />
+    <Resource Include="graphic\aup.jpg" />
+    <Resource Include="graphic\aup_active.jpg" />
+    <Resource Include="graphic\b0.jpg" />
+    <Resource Include="graphic\b0.png" />
+    <Resource Include="graphic\b1.jpg" />
+    <Resource Include="graphic\b1.png" />
+    <Resource Include="graphic\b2.jpg" />
+    <Resource Include="graphic\b2.png" />
+    <Resource Include="graphic\b3.jpg" />
+    <Resource Include="graphic\b3.png" />
+    <Resource Include="graphic\b4.jpg" />
+    <Resource Include="graphic\b4.png" />
+    <Resource Include="graphic\b5.jpg" />
+    <Resource Include="graphic\b5.png" />
+    <Resource Include="graphic\bn.dib" />
+    <Resource Include="graphic\bn.jpg" />
+    <Resource Include="graphic\bn.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="graphic\adown_remake.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

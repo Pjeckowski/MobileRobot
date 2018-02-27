@@ -1,7 +1,9 @@
-﻿namespace MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.StatusUpdateRequest
+﻿using MobileRobotControl.Components.RobotDataPresenters;
+
+namespace MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.StatusUpdateRequest
 {
     public interface IRobotStatusUpdate
     {
-        void Execute(MainWindow mainWindow);
+        void Execute(IRobotDataPresenter robotDataPresenter);
     }
 }

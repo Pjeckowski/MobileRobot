@@ -21,11 +21,10 @@
 void errorInform();
 void dataWorkout(uint8_t data[], uint8_t count);
 void radioTransmit();
-void dataWorkout1();
-uint8_t getNextPositionRequest();
 void uartRequestCollect(uint8_t data);
 void radioPrepareNextTransmission();
 void uartPacketWorkout(uint8_t* packet, uint8_t count);
+uint8_t getNextPositionRequest();
 float getXYValue(uint8_t* packet, uint8_t count);
 
 volatile uint8_t irCounter;
@@ -53,7 +52,7 @@ uint8_t uartRecCounter = 0, uartTransmitTrigger = 0, uartFlushTimer = 0, isRobot
 volatile uint8_t positionRequest = 0;
 
 volatile uint16_t counter=0;
-float a = 6000;
+
 
 int main()
 {
@@ -62,6 +61,7 @@ int main()
 	DDRA = 0b00000000;
 	PORTA = 0b00000001;
 
+
 	_delay_ms(2000);
 
 	TCCR0 |= (1 << CS02);
@@ -69,8 +69,8 @@ int main()
 	sei();
 
 	_delay_ms(3000);
-	init_SPI(1,0);
-	init_radio(0, 0, 5);
+	SPI_init(1,0);
+	radio_init(0, 0, 5);
 
 	if(radio_ReadRegister(STATUS) == 0b00001110)
 		PORTD = 0b01000000;
@@ -90,6 +90,7 @@ int main()
 		radioTransmit();
 	}
 }
+
 
 ISR(TIMER0_OVF_vect)
 {
@@ -291,7 +292,7 @@ void radioTransmit()
 				{
 					if(isRequest(radioSendBufor[0]))
 					{
-						reset_radio();
+						radio_reset();
 						radio_switchReceiver();
 						radio_actionTimer = irCounter + 30;
 						RadioState = WFBR;
@@ -303,7 +304,9 @@ void radioTransmit()
 				}
 				else
 				{
-					RadioState = TRA1;
+					radio_reset();
+					radio_switchTransmiter();
+					RadioState = WFBT;
 				}
 			}
 			break;
@@ -335,6 +338,8 @@ void radioTransmit()
 						{
 							errorInform();
 						}
+
+						radio_reset();
 						radio_switchTransmiter();
 						RadioState = WFBT;
 						radio_actionTimer = irCounter + 25;
@@ -366,13 +371,6 @@ void errorInform()
 void dataWorkout(uint8_t data[], uint8_t count )
 {
 	uart_sendPacket(data, count);
-}
-
-void dataWorkout1()
-{
-	table = "\tReceived!";
-	uart_sendString(table);
-	uart_sendByteAsChar(radioRecBufor[0]);
 }
 
 float getXYValue(uint8_t* packet, uint8_t count)

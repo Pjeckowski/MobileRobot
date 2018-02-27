@@ -1,18 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO.Ports;
-using System.Text;
-using System.Threading.Tasks;
-using MobileRobotControl.Events;
 
 namespace MobileRobotControl.Components.Connection
 {
     public class RS232 : IConnector
     {
-        string data;
+        public event EventHandler<string> DataReceivedEvent;
+        
+        private string data;
         private SerialPort port;
 
-        public event EventHandler<string> DataReceivedEvent;
+        public bool IsOpen
+        {
+            get { return port.IsOpen; }
+        }
 
         public bool PortOpen()
         {
@@ -90,16 +91,11 @@ namespace MobileRobotControl.Components.Connection
             return port.ReadExisting();
         }
 
-         public void Close()
+        public void Close()
         {
             port.Dispose();
             port.Close();
         }
         
-        public bool Isopen()
-        {
-            return port.IsOpen;
-        }
-
     }
 }

@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MobileRobotControl.Components
+﻿namespace MobileRobotControl.Components.RobotControl
 {
-    class SimpleRobotControl : IRobotControl
+    public class SimpleRobotControl : IRobotControl
     {
 
         public EnginesFill EnginesFill

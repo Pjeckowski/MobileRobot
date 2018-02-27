@@ -1,5 +1,5 @@
 ﻿
-namespace MobileRobotControl.Components
+namespace MobileRobotControl.Components.RobotControl
 {
     public class EnginesFill
     {

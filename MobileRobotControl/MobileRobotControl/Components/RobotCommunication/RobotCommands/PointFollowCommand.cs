@@ -1,5 +1,5 @@
 ﻿using MobileRobotControl.Components.Connection;
-using MobileRobotControl.Components.RobotCommunication.PacketDescriber;
+using MobileRobotControl.Components.RobotCommunication.PacketDescriptions;
 
 namespace MobileRobotControl.Components.RobotCommunication.RobotCommands
 {
@@ -10,7 +10,7 @@ namespace MobileRobotControl.Components.RobotCommunication.RobotCommands
         public PointFollowCommand(IPacketDescription packetDescription)
         {
             Content = packetDescription.PacketStart + "P" +
-          packetDescription.PacketEnd;
+                packetDescription.PacketEnd;
         }
         
         public void Execute(IConnector connection)

@@ -11,16 +11,17 @@
 #include<avr/io.h>
 #include<util/delay.h>
 
-
+// I/O CONFIGURATION
 #define CE 			PB3
 #define CSN 		PB4
 #define IRQ			PA0
 #define IRQPIN   	PINA
+// I/O CONFIGURATION
+
 #define R 			0
 #define W 			1
 #define READ_REG  	0b00000000
 #define WRITE_REG 	0x20
-
 
 #define STATUS        	0x07
 #define REGISTER_MASK	0x1F
@@ -62,8 +63,6 @@
 #define DYNPD	    0x1C
 #define FEATURE	    0x1D
 
-#define IRQ 	PA0
-#define IRQPIN	PINA
 
 uint8_t dummy[5];
 enum nrfMode {TRAN, RECE};
@@ -73,22 +72,22 @@ uint8_t dataToSend[5], dataCount = 0;
 
 ////////////////////////////// SPI
 
-void init_SPI(char MASTR,char DIVIDE)
+void SPI_init(char MASTR, char DIVIDE)
 {
 	if(MASTR == 1)//if master then set master bit and sck speed
 	{
-		DDRB |= (1<<DDB5) | (1<<DDB7) | (1<<DDB4) | (1 << DDB3); //MOSI,SCK,SS OUTPUT
+		DDRB |= (1 << DDB5) | (1 << DDB7) | (1 << DDB4) | (1 << DDB3); //MOSI,SCK,SS OUTPUT
 
-		SPCR |= (1<<MSTR);
+		SPCR |= (1 << MSTR);
 
 
 		if(DIVIDE == 64)
 		{
-			SPCR |= (1<<SPR1);
+			SPCR |= (1 << SPR1);
 		}
 		else if(DIVIDE == 16)
 		{
-			SPCR |= (1<<SPR0);
+			SPCR |= (1 << SPR0);
 		}
 		else if(DIVIDE == 4)
 		{
@@ -96,7 +95,7 @@ void init_SPI(char MASTR,char DIVIDE)
 		}
 		else //fosc/128
 		{
-			SPCR |= (1<<SPR0) | (1<<SPR1);
+			SPCR |= (1 << SPR0) | (1 << SPR1);
 		}
 
 	}
@@ -105,61 +104,61 @@ void init_SPI(char MASTR,char DIVIDE)
 		DDRB |= (1 << PB6); //MISO OUTPUT in slave
 	}
 
-	PORTB |= (1<<CSN); // RF doesn't listen to uC
-	PORTB &= ~(1<<CE); // RF doesn't try to send anything
-	SPCR |= (1<<SPE);//enable SPI
+	PORTB |= (1 << CSN); // RF doesn't listen to uC
+	PORTB &= ~(1 << CE); // RF doesn't try to send anything
+	SPCR |= (1 << SPE);//enable SPI
 }
 
-char send_SPI(char Data)
+char SPI_send(char data)
 {
-	SPDR = Data;
-	while(! (SPSR & (1<<SPIF)));
+	SPDR = data;
+	while(! (SPSR & (1 << SPIF)));
 	return SPDR;
 }
 
 ////////////////////////////// RADIO
 
-char radio_ReadRegister(char Reg)
+char radio_ReadRegister(char reg)
 {
 
 	PORTB &= ~(1 << CSN);
 	_delay_us(10);
-	send_SPI(Reg);
+	SPI_send(reg);
 	_delay_us(10);
-	Reg = send_SPI(0xFF);
+	reg = SPI_send(0xFF);
 	_delay_us(10);
 	PORTB |= (1<<CSN);
-	return Reg;
+	return reg;
 
 }
 
-void r_w_radio(uint8_t R_W, uint8_t Reg, uint8_t Data[], int Count, uint8_t Data_Received[])
+void r_w_radio(uint8_t R_W, uint8_t reg, uint8_t data[], int count, uint8_t data_Received[])
 {
 
 	if(R_W == W)
 	{
-		Reg = Reg + WRITE_REG; //if write, then add 0x20 to reg addr
+		reg = reg + WRITE_REG; //if write, then add 0x20 to reg addr
 	}
 
 	_delay_us(10);
-	PORTB &= ~(1<<CSN); // CSN goes low so the RF starts listening
+	PORTB &= ~(1 << CSN); // CSN goes low so the RF starts listening
 	_delay_us(10);
-	send_SPI(Reg); //sends command to inform which reg to read or write
+	SPI_send(reg); //sends command to inform which reg to read or write
 	_delay_us(10);
 
 	int i=0;
-	for( i=0; i<Count; i++)
+	for( i=0; i < count; i++)
 	{
-		if(R_W == R && Reg != W_TX_PAYLOAD)
+		if(R_W == R && reg != W_TX_PAYLOAD)
 		{
 
-			Data_Received[i]=send_SPI(0xFF);
+			data_Received[i] = SPI_send(0xFF);
 			_delay_us(10);
 		}
 		else
 		{
 
-			send_SPI(Data[i]);
+			SPI_send(data[i]);
 			_delay_us(10);
 		}
 	}
@@ -167,7 +166,7 @@ void r_w_radio(uint8_t R_W, uint8_t Reg, uint8_t Data[], int Count, uint8_t Data
 
 }
 
-void init_radio(uint8_t MODE, uint8_t SPEED, uint8_t D_WIDTH)
+void radio_init(uint8_t MODE, uint8_t SPEED, uint8_t D_WIDTH)
 {
 	//MODE- 	0- TRANSM, else REC
 	//SPEED 	2- 2Mb, 1- 1Mb, else 250k
@@ -212,10 +211,10 @@ void init_radio(uint8_t MODE, uint8_t SPEED, uint8_t D_WIDTH)
 		data[i] = 0x12;
 	}
 	//sets the recive address for datapipe 0
-	r_w_radio(W,RX_ADDR_P0,data,5,dummy);
+	r_w_radio(W, RX_ADDR_P0, data, 5, dummy);
 
 	//sets the transmitter address for datapipe 0
-	r_w_radio(W,TX_ADDR,data,5,dummy);
+	r_w_radio(W, TX_ADDR, data, 5, dummy);
 
 	if(D_WIDTH >= 1 && D_WIDTH <= 5)
 	{
@@ -226,12 +225,12 @@ void init_radio(uint8_t MODE, uint8_t SPEED, uint8_t D_WIDTH)
 		data[0] = 1;
 	}
 	//sets the databytes amount: 1 to 32
-	r_w_radio(W,RX_PW_P0,data,1,dummy);
+	r_w_radio(W, RX_PW_P0, data, 1, dummy);
 
 	data[0] = 0b00100011;
 	//7:4 sets the delay between retransmisions - 0000: 250, 0001: 500, 0010:750us etc.
 	//3:0 sets the retransissions count - up to 15
-	r_w_radio(W,SETUP_RETR,data,1,dummy);
+	r_w_radio(W, SETUP_RETR, data, 1, dummy);
 
 
 	//MODE- 	0- TRANSM, else REC
@@ -246,13 +245,13 @@ void init_radio(uint8_t MODE, uint8_t SPEED, uint8_t D_WIDTH)
 	{
 		RadioMode = TRAN;
 		data[0] = 0b00011110;
-		r_w_radio(W,CONFIG,data,1,dummy);
+		r_w_radio(W, CONFIG, data, 1, dummy);
 	}
 	else
 	{
 		RadioMode = RECE;
 		data[0] = 0b00011111;
-		r_w_radio(W,CONFIG,data,1,dummy);
+		r_w_radio(W, CONFIG, data, 1, dummy);
 	}
 
 	_delay_ms(10);
@@ -288,14 +287,14 @@ void radio_startListenning()
 	PORTB |= (1 << CE);
 }
 
-void reset_radio()
+void radio_reset()
 {
 	_delay_us(10);
 	PORTB &= ~(1 << CSN); //CSN low so the 24L01 listens
 	_delay_us(10);
-	send_SPI(WRITE_REG + STATUS);
+	SPI_send(WRITE_REG + STATUS);
 	_delay_us(10);
-	send_SPI(0b01110000);
+	SPI_send(0b01110000);
 	_delay_us(10);
 	PORTB |= (1 << CSN);
 }
@@ -304,21 +303,21 @@ void radio_switchReceiver()
 {
 	uint8_t data[5];
 	data[0] = 0b00011111;
-	r_w_radio(W,CONFIG,data,1,dummy);
+	r_w_radio(W, CONFIG, data, 1, dummy);
 }
 
 void radio_switchTransmiter()
 {
 	uint8_t data[5];
 	data[0] = 0b00011110;
-	r_w_radio(W,CONFIG,data,1,dummy);
+	r_w_radio(W, CONFIG, data, 1, dummy);
 }
 
 void radio_preparePayload(uint8_t data[], uint8_t count)
 {
-	reset_radio();
-	r_w_radio(R, FLUSH_TX,data,0,dummy);
-	r_w_radio(R, W_TX_PAYLOAD,data,count,dummy);
+	radio_reset();
+	r_w_radio(R, FLUSH_TX, data, 0, dummy);
+	r_w_radio(R, W_TX_PAYLOAD, data, count, dummy);
 }
 
 void radio_transmit()
@@ -333,11 +332,11 @@ void radio_receive(uint8_t data_Received[],uint8_t count)
 {
 	_delay_us(10);
 	PORTB &= ~(1<<CE);
-	r_w_radio(R,R_RX_PAYLOAD, dummy, count, data_Received);
+	r_w_radio(R, R_RX_PAYLOAD, dummy, count, data_Received);
 	_delay_us(10);
-	send_SPI(FLUSH_RX);
+	SPI_send(FLUSH_RX);
 	_delay_us(10);
-	reset_radio();
+	radio_reset();
 	_delay_us(10);
 }
 

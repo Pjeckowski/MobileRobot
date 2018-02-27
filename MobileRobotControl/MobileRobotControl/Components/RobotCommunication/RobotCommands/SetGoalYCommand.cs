@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Linq;
 using MobileRobotControl.Components.Connection;
-using MobileRobotControl.Components.RobotCommunication.PacketDescriber;
+using MobileRobotControl.Components.RobotCommunication.PacketDescriptions;
 
 namespace MobileRobotControl.Components.RobotCommunication.RobotCommands
 {
     public class SetGoalYCommand : IRobotCommand
     {
-        private int y;
         public string Content { get; private set; }
 
         public SetGoalYCommand(float goalY, IPacketDescription packetDescription)
         {
-            y =(int) (goalY * 100);
+            int y =(int) (goalY * 100);
 
             while (0 != y)
             {

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using MobileRobotControl.Events;
 
 namespace MobileRobotControl.Components.Connection
 {

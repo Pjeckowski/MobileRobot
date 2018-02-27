@@ -1,17 +1,16 @@
 ﻿using System;
 using MobileRobotControl.Components.Connection;
-using MobileRobotControl.Components.RobotCommunication.PacketDescriber;
+using MobileRobotControl.Components.RobotCommunication.PacketDescriptions;
 
 namespace MobileRobotControl.Components.RobotCommunication.RobotCommands
 {
     public class SetGoalXCommand : IRobotCommand
     {
-        private int x;
         public string Content { get; private set; }
 
         public SetGoalXCommand(float goalX, IPacketDescription packetDescription)
         {
-            x =(int) (goalX * 100);
+            int x =(int) (goalX * 100);
 
             while (0 != x)
             {

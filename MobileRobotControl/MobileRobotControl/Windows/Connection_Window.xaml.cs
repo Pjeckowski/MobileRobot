@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.IO.Ports;
+using System.Windows.Controls;
 
 namespace MobileRobotControl
 {
@@ -15,6 +16,7 @@ namespace MobileRobotControl
         SerialPort Port;
         public delegate void PS(SerialPort Port);
         public PS Port_Open;
+        
 
         public Connection_Window()
         {

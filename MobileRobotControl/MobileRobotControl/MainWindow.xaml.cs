@@ -1,19 +1,18 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO.Ports;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-using MobileRobotControl.Components;
+using System.Windows.Media.Imaging;
 using MobileRobotControl.Components.Connection;
-using MobileRobotControl.Components.RobotCommunication.PacketDescriber;
+using MobileRobotControl.Components.RobotCommunication.PacketDescriptions;
 using MobileRobotControl.Components.RobotCommunication.RobotCommands;
 using MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets;
-using MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.RecPacketSplitter;
+using MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.RecPacketSplitters;
 using MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.StatusUpdateRequest;
+using MobileRobotControl.Components.RobotControl;
+using MobileRobotControl.Components.RobotDataPresenters;
 
 namespace MobileRobotControl
 {
@@ -21,7 +20,7 @@ namespace MobileRobotControl
     /// Interaction logic for MainWindow.xaml
     /// </summary>
 
-    public partial class MainWindow : Window
+    public partial class MainWindow : IRobotDataPresenter
     {
         private Connection_Window connectionWindow;
         private RS232 rs232;
@@ -41,31 +40,33 @@ namespace MobileRobotControl
         private SimpleRobotControl _robotControl;
 
         private bool isManualControl;
+        private Grid _currentlyDisplayedGrid;
+        private Grid _removedGrid;
+
+        BitmapImage _aup_True, _aup_False, _adown_True, _adown_False, _aleft_True, _aleft_False, _aright_True, _aright_False;
 
         public MainWindow()
         {
+
             InitializeComponent();
+            InitImages();
             robotStatusUpdateFactory = new RobotStatusUpdateFactory();
             packetDescription = new PacketDescription("P","\r");
 
-            robotPosXLabel.Content = sizeof(float).ToString();
-            byte[] b = {129, 13, 255, 255, 255};
-            var enc = Encoding.GetEncoding("iso-8859-1");
-            string a = enc.GetString(b);
+            RobotPosXLabel.Content = sizeof(float).ToString();
 
-            if (a[1] == '\r')
-            {
-                Debug.WriteLine(a);
-            }
-            RobotControlDockPanel.Children.Remove(ManualGrid);
+            RobotControlDockPanel.Children.Remove(ManualControlGrid);
+            _currentlyDisplayedGrid = PointFollowGrid;
             _robotControl = new SimpleRobotControl();
+            RobotSpeedSlider.Focusable = false;
+            SetSpeedButton.Focusable = false;
+            RobotStopButton.Focusable = false;
             SendControl();
         }
 
         private void ConnectMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            connectionWindow = new Connection_Window();
-            connectionWindow.Owner = this;
+            connectionWindow = new Connection_Window {Owner = this};
             connectionWindow.Port_Open += PortOpenRequest;
             connectionWindow.Show();
         }
@@ -81,10 +82,10 @@ namespace MobileRobotControl
             rs232 = new RS232();
             rs232.PortOpen(port);
             packetSplitter = new RecPacketSplitter(packetDescription, rs232);
-            packetSplitter.PacketReceivedEvent += packetReceived;
+            packetSplitter.PacketReceivedEvent += PacketReceived;
         }
 
-        private void packetReceived(object sender, string data)
+        private void PacketReceived(object sender, string data)
         {
             IRecRobotPacket packet = new RecRobotPacket(data);
             IRobotStatusUpdate robotStatusUpdate = robotStatusUpdateFactory.GetRobotStatusUpdate(packet);
@@ -94,9 +95,9 @@ namespace MobileRobotControl
 #region PositionUpdates
         public void UpdateX(float value)
         {
-            if (robotPosXLabel.Dispatcher.CheckAccess())
+            if (RobotPosXLabel.Dispatcher.CheckAccess())
             {
-                robotPosXLabel.Content = value.ToString();
+                RobotPosXLabel.Content = value.ToString();
             }
             else
             {
@@ -108,9 +109,9 @@ namespace MobileRobotControl
 
         public void UpdateY(float value)
         {
-            if (robotPosYLabel.Dispatcher.CheckAccess())
+            if (RobotPosYLabel.Dispatcher.CheckAccess())
             {
-                robotPosYLabel.Content = value.ToString();
+                RobotPosYLabel.Content = value.ToString();
             }
             else
             {
@@ -122,9 +123,9 @@ namespace MobileRobotControl
 
         public void UpdateAngle(float value)
         {
-            if (robotAngleLabel.Dispatcher.CheckAccess())
+            if (RobotAngleLabel.Dispatcher.CheckAccess())
             {
-                robotAngleLabel.Content = value.ToString();
+                RobotAngleLabel.Content = value.ToString();
             }
             else
             {
@@ -154,79 +155,75 @@ namespace MobileRobotControl
         private void SetXButton_Click(object sender, RoutedEventArgs e)
         {
             RobotCommand = new SetGoalXCommand((float) 40.0, packetDescription);
-            IRobotCommand command2 = new SetEnginesCommand(49,49,packetDescription);
-
             PosXLabel.Content = RobotCommand.Content;
-            RobotCommand.Execute(rs232);
-        }
-
-        private void ConnectMenuItem_IsMouseDirectlyOverChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            MenuItem lel = (MenuItem) sender;
-            lel.Foreground = new SolidColorBrush(Colors.AliceBlue);
-        }
-
-        private void SetEnginesButton_Click(object sender, RoutedEventArgs e)
-        {
-            RobotCommand = new SetEnginesCommand(Convert.ToInt32(LeftEngineTextBox.Text), Convert.ToInt32(RightEngineTextBox.Text), packetDescription);
             RobotCommand.Execute(rs232);
         }
 
         private async void ManualControlButton_Click(object sender, RoutedEventArgs e)
         {
-            RobotControlDockPanel.Children.Add(ManualGrid);
-            int ssize = (int)AutoGrid.ActualHeight / 20;
-            while (AutoGrid.ActualHeight > 0)
+            RobotControlDockPanel.Children.Add(ManualControlGrid);
+ 
+            int ssize = (int)_currentlyDisplayedGrid.ActualHeight / 20;
+            while (_currentlyDisplayedGrid.ActualHeight > 0)
             {
-                if (AutoGrid.ActualHeight < 2 * ssize)
+                if (_currentlyDisplayedGrid.ActualHeight < 2 * ssize)
                 {
-                    AutoGrid.Height = 0;
-                    ManualGrid.Height = Double.NaN;
+                    _currentlyDisplayedGrid.Height = 0;
+                    ManualControlGrid.Height = Double.NaN;
                 }
                 else
                 {
-                    AutoGrid.Height = (int)AutoGrid.ActualHeight - ssize;
-                    ManualGrid.Height = ManualGrid.ActualHeight + ssize;
+                    _currentlyDisplayedGrid.Height = (int)_currentlyDisplayedGrid.ActualHeight - ssize;
+                    ManualControlGrid.Height = ManualControlGrid.ActualHeight + ssize;
                 }
                     
 
                 await Task.Delay(1);
             }
-            RobotControlDockPanel.Children.Remove(AutoGrid);
+            RobotControlDockPanel.Children.Remove(_currentlyDisplayedGrid);
+            _currentlyDisplayedGrid = ManualControlGrid;
             isManualControl = true;
         }
 
         private async void AutoControlButton_Click(object sender, RoutedEventArgs e)
         {
-            RobotControlDockPanel.Children.Remove(ManualGrid);
-            RobotControlDockPanel.Children.Add(AutoGrid);
-            RobotControlDockPanel.Children.Add(ManualGrid);
-            int ssize = (int)ManualGrid.ActualHeight / 20;
-            while (ManualGrid.ActualHeight > 1)
+            SwapGridFromTop(PointFollowGrid);
+            isManualControl = false;
+        }
+
+        private async Task SwapGridFromTop(Grid gridToDisplay)
+        {
+            RobotControlDockPanel.Children.Remove(_currentlyDisplayedGrid);
+            RobotControlDockPanel.Children.Add(gridToDisplay);
+            RobotControlDockPanel.Children.Add(_currentlyDisplayedGrid);
+            int ssize = (int)_currentlyDisplayedGrid.ActualHeight / 20;
+
+            while (_currentlyDisplayedGrid.ActualHeight > 1)
             {
-                if (ManualGrid.ActualHeight < 2 * ssize)
+                if (_currentlyDisplayedGrid.ActualHeight < 2 * ssize)
                 {
-                    
-                    ManualGrid.Height = 1;
+
+                    _currentlyDisplayedGrid.Height = 1;
                 }
                 else
                 {
-                    robotAngleLabel.Content = AutoGrid.Height = (int)AutoGrid.ActualHeight + ssize;
-                    ManualGrid.Height = ManualGrid.ActualHeight - ssize;
+                    RobotAngleLabel.Content = gridToDisplay.Height = (int)gridToDisplay.ActualHeight + ssize;
+                    _currentlyDisplayedGrid.Height = _currentlyDisplayedGrid.ActualHeight - ssize;
                 }
 
                 await Task.Delay(1);
             }
-            RobotControlDockPanel.Children.Remove(ManualGrid);
-            AutoGrid.Height = Double.NaN;
-            isManualControl = false;
+
+            RobotControlDockPanel.Children.Remove(_currentlyDisplayedGrid);
+            gridToDisplay.Height = Double.NaN;
+            _currentlyDisplayedGrid = gridToDisplay;
         }
 
         private async void SendControl()
         {
             while (true)
             {
-                if (rs232 != null && rs232.Isopen() && isManualControl)
+                if (rs232 != null && rs232.IsOpen && isManualControl)
                 {
                     var enginesFill = _robotControl.EnginesFill;
                     RobotCommand = new SetEnginesCommand(enginesFill.LeftEngineFill, enginesFill.RightEngineFill, packetDescription);
@@ -237,44 +234,92 @@ namespace MobileRobotControl
             }
         }
 
-        private void ControlTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+
+        private void Window_PreviewKeyDown_1(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Up)
+            switch (e.Key)
             {
-                _robotControl.aUp = true;
-            }
-            else if (e.Key == Key.Down)
-            {
-                _robotControl.aDown = true;
-            }
-            else if (e.Key == Key.Left)
-            {
-                _robotControl.aLeft = true;
-            }
-            else if (e.Key == Key.Right)
-            {
-                _robotControl.aRight = true;
+                case Key.Up:
+                    _robotControl.aUp = true;
+                    AUpImage.Source = _aup_True;
+                    break;
+                case Key.Down:
+                    _robotControl.aDown = true;
+                    ADownImage.Source = _adown_True;
+                    break;
+                case Key.Left:
+                    _robotControl.aLeft = true;
+                    ALeftImage.Source = _aleft_True;
+                    break;
+                case Key.Right:
+                    _robotControl.aRight = true;
+                    ARightImage.Source = _aright_True;
+                    break;
             }
         }
 
-        private void ControlTextBox_PreviewKeyUp(object sender, KeyEventArgs e)
+        private void Window_PreviewKeyUp_1(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Up)
+            switch (e.Key)
             {
-                _robotControl.aUp = false;
+                case Key.Up:
+                    _robotControl.aUp = false;
+                    AUpImage.Source = _aup_False;
+                    break;
+                case Key.Down:
+                    _robotControl.aDown = false;
+                    ADownImage.Source = _adown_False;
+                    break;
+                case Key.Left:
+                    _robotControl.aLeft = false;
+                    ALeftImage.Source = _aleft_False;
+                    break;
+                case Key.Right:
+                    _robotControl.aRight = false;
+                    ARightImage.Source = _aright_False;
+                    break;
             }
-            else if (e.Key == Key.Down)
-            {
-                _robotControl.aDown = false;
-            }
-            else if (e.Key == Key.Left)
-            {
-                _robotControl.aLeft = false;
-            }
-            else if (e.Key == Key.Right)
-            {
-                _robotControl.aRight = false;
-            }
+        }
+
+        private void InitImages()
+        {
+            _aup_True = new BitmapImage();
+            _aup_True.BeginInit();
+            _aup_True.UriSource = new Uri("graphic/aup_active.jpg", UriKind.Relative);
+            _aup_True.EndInit();
+            _aup_False = new BitmapImage();
+            _aup_False.BeginInit();
+            _aup_False.UriSource = new Uri("graphic/aup.jpg", UriKind.Relative);
+            _aup_False.EndInit();
+            _adown_True = new BitmapImage();
+            _adown_True.BeginInit();
+            _adown_True.UriSource = new Uri("graphic/adown_active.jpg", UriKind.Relative);
+            _adown_True.EndInit();
+            _adown_False = new BitmapImage();
+            _adown_False.BeginInit();
+            _adown_False.UriSource = new Uri("graphic/adown.jpg", UriKind.Relative);
+            _adown_False.EndInit();
+            _aleft_True = new BitmapImage();
+            _aleft_True.BeginInit();
+            _aleft_True.UriSource = new Uri("graphic/al_active.jpg", UriKind.Relative);
+            _aleft_True.EndInit();
+            _aleft_False = new BitmapImage();
+            _aleft_False.BeginInit();
+            _aleft_False.UriSource = new Uri("graphic/al.jpg", UriKind.Relative);
+            _aleft_False.EndInit();
+            _aright_True = new BitmapImage();
+            _aright_True.BeginInit();
+            _aright_True.UriSource = new Uri("graphic/ar_active.jpg", UriKind.Relative);
+            _aright_True.EndInit();
+            _aright_False = new BitmapImage();
+            _aright_False.BeginInit();
+            _aright_False.UriSource = new Uri("graphic/ar.jpg", UriKind.Relative);
+            _aright_False.EndInit();
+
+            AUpImage.Source = _aup_False;
+            ALeftImage.Source = _aleft_False;
+            ADownImage.Source = _adown_False;
+            ARightImage.Source = _aright_False;
         }
     }
 }

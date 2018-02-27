@@ -1,4 +1,5 @@
 ﻿using System;
+using MobileRobotControl.Components.RobotDataPresenters;
 
 namespace MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.StatusUpdateRequest
 {
@@ -11,9 +12,9 @@ namespace MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.
             x = Convert.ToSingle(content) / 100;
         }
 
-        public void Execute(MainWindow mainWindow)
+        public void Execute(IRobotDataPresenter robotDataPresenter)
         {
-            mainWindow.UpdateX(x);
+            robotDataPresenter.UpdateX(x);
         }
     }
 }

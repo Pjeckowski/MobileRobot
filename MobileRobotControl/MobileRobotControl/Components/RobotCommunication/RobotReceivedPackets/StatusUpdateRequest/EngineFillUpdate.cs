@@ -1,4 +1,5 @@
 ﻿using System;
+using MobileRobotControl.Components.RobotDataPresenters;
 
 namespace MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.StatusUpdateRequest
 {
@@ -13,9 +14,9 @@ namespace MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.
             rEngine = Convert.ToInt32(temp[1]);
         }
 
-        public void Execute(MainWindow mainWindow)
+        public void Execute(IRobotDataPresenter robotDataPresenter)
         {
-            mainWindow.UpdateEngines(lEngine,rEngine);
+            robotDataPresenter.UpdateEngines(lEngine,rEngine);
         }
     }
 }

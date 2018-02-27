@@ -1,4 +1,4 @@
-﻿namespace MobileRobotControl.Components.RobotCommunication.PacketDescriber
+﻿namespace MobileRobotControl.Components.RobotCommunication.PacketDescriptions
 {
     public interface IPacketDescription
     {

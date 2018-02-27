@@ -1,5 +1,5 @@
 ﻿using MobileRobotControl.Components.Connection;
-using MobileRobotControl.Components.RobotCommunication.PacketDescriber;
+using MobileRobotControl.Components.RobotCommunication.PacketDescriptions;
 
 namespace MobileRobotControl.Components.RobotCommunication.RobotCommands
 {

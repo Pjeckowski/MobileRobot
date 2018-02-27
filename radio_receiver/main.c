@@ -84,6 +84,7 @@ int main()
 	_delay_ms(2000);
 	PORTB |= (1 << CE);
 
+
 	while(1)
 	{
 		radioRec();

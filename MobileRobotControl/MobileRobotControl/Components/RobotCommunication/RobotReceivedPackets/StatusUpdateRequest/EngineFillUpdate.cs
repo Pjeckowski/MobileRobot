@@ -5,18 +5,18 @@ namespace MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.
 {
     public class EngineFillUpdate : IRobotStatusUpdate
     {
-        private int lEngine, rEngine;
+        private readonly int _lEngine, _rEngine;
 
         public EngineFillUpdate(string content)
         {
             string[] temp = content.Split(',');
-            lEngine = Convert.ToInt32(temp[0]);
-            rEngine = Convert.ToInt32(temp[1]);
+            _lEngine = Convert.ToInt32(temp[0]);
+            _rEngine = Convert.ToInt32(temp[1]);
         }
 
         public void Execute(IRobotDataPresenter robotDataPresenter)
         {
-            robotDataPresenter.UpdateEngines(lEngine,rEngine);
+            robotDataPresenter.UpdateEngines(_lEngine,_rEngine);
         }
     }
 }

@@ -18,7 +18,6 @@ namespace MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets
             {
                 throw new ArgumentException("Unrecognized packet header");
             }
-
         }
     }
 }

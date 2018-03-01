@@ -9,53 +9,53 @@ namespace MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.
     public class RecPacketSplitter : IRecPacketSplitter
     {
         public event EventHandler<string> PacketReceivedEvent;
-        private IConnector connection;
-        private IPacketDescription packetDescription;
+        private IConnector _connection;
+        private IPacketDescription _packetDescription;
 
-        private string packetPart = string.Empty;
-        private List<string> validPackets = new List<string>();
+        private string _packetPart = string.Empty;
+        private List<string> _validPackets = new List<string>();
 
         public RecPacketSplitter(IPacketDescription packetDescription, IConnector connection)
         {
-            this.connection = connection;
-            this.connection.DataReceivedEvent += ConnectionDataReceived;
-            this.packetDescription = packetDescription;
+            _connection = connection;
+            _connection.DataReceivedEvent += OnConnectionDataReceived;
+            _packetDescription = packetDescription;
         }
 
-        private void ConnectionDataReceived(object sender, string data)
+        private void OnConnectionDataReceived(object sender, string data)
         {
-            data = data.Replace(packetDescription.PacketStart, ":" + packetDescription.PacketStart);
+            data = data.Replace(_packetDescription.PacketStart, ":" + _packetDescription.PacketStart);
             string[] packetList = Regex.Split(data, ":");
-            int lenght = packetList.Length;
+            int lastElementIndex = packetList.Length - 1;
 
-            if (!packetList[0].Contains(packetDescription.PacketStart) && !packetPart.Equals(string.Empty))
+            if (!packetList[0].Contains(_packetDescription.PacketStart) && !_packetPart.Equals(string.Empty))
             {
-                packetList[0] = packetPart + packetList[0];
-                packetPart = string.Empty;
+                packetList[0] = _packetPart + packetList[0];
+                _packetPart = string.Empty;
             }
 
-            if (!packetList[lenght - 1].Contains(packetDescription.PacketEnd) && packetList[lenght - 1].Contains(packetDescription.PacketStart))
+            if (!packetList[lastElementIndex].Contains(_packetDescription.PacketEnd) && packetList[lastElementIndex].Contains(_packetDescription.PacketStart))
             {
-                packetPart = packetList[lenght - 1];
+                _packetPart = packetList[lastElementIndex];
             }
 
             foreach (var s in packetList)
             {
-                if (s.Contains(packetDescription.PacketStart) && s.Contains(packetDescription.PacketEnd))
+                if (s.Contains(_packetDescription.PacketStart) && s.Contains(_packetDescription.PacketEnd))
                 {
-                    validPackets.Add(s);
+                    _validPackets.Add(s);
                 }
             }
 
-            foreach (var p in validPackets)
+            foreach (var p in _validPackets)
             {
                 if (null != PacketReceivedEvent)
                 {
-                    PacketReceivedEvent(this, p.Replace(packetDescription.PacketStart,"").Replace(packetDescription.PacketEnd, ""));
+                    PacketReceivedEvent(this, p.Replace(_packetDescription.PacketStart,"").Replace(_packetDescription.PacketEnd, ""));
                 }
             }
 
-            validPackets.Clear();
+            _validPackets.Clear();
         }
 
       

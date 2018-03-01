@@ -22,26 +22,26 @@ namespace MobileRobotControl
 
     public partial class MainWindow : IRobotDataPresenter
     {
-        private Connection_Window connectionWindow;
-        private RS232 rs232;
-        private RobotStatusUpdateFactory robotStatusUpdateFactory;
-        private IRecPacketSplitter packetSplitter;
-        private IPacketDescription packetDescription;
+        private Connection_Window _connectionWindow;
+        private RS232 _rs232;
+        private RobotStatusUpdateFactory _robotStatusUpdateFactory;
+        private IRecPacketSplitter _packetSplitter;
+        private IPacketDescription _packetDescription;
         
         delegate void UpdatePosDelegate(float value);
-        private UpdatePosDelegate posUpdateDelegate;
-        private object delObject;
+        private UpdatePosDelegate _posUpdateDelegate;
+        private object _delObject;
 
         delegate void UpdateEngDelegate(int lEngine, int rEngine);
-        private UpdateEngDelegate engUpdateDelegate;
-        private object[] delObjects = new object[2];
+        private UpdateEngDelegate _engUpdateDelegate;
+        private object[] _delObjects = new object[2];
 
-        private IRobotCommand RobotCommand;
+        private IRobotCommand _robotCommand;
         private SimpleRobotControl _robotControl;
 
-        private bool isManualControl;
+        private bool _isManualControl;
         private Grid _currentlyDisplayedGrid;
-        private Grid _removedGrid;
+
 
         BitmapImage _aup_True, _aup_False, _adown_True, _adown_False, _aleft_True, _aleft_False, _aright_True, _aright_False;
 
@@ -50,10 +50,8 @@ namespace MobileRobotControl
 
             InitializeComponent();
             InitImages();
-            robotStatusUpdateFactory = new RobotStatusUpdateFactory();
-            packetDescription = new PacketDescription("P","\r");
-
-            RobotPosXLabel.Content = sizeof(float).ToString();
+            _robotStatusUpdateFactory = new RobotStatusUpdateFactory();
+            _packetDescription = new PacketDescription("P","\r");
 
             RobotControlDockPanel.Children.Remove(ManualControlGrid);
             _currentlyDisplayedGrid = PointFollowGrid;
@@ -61,34 +59,34 @@ namespace MobileRobotControl
             RobotSpeedSlider.Focusable = false;
             SetSpeedButton.Focusable = false;
             RobotStopButton.Focusable = false;
-            SendControl();
+            StartControlLoop();
         }
 
         private void ConnectMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            connectionWindow = new Connection_Window {Owner = this};
-            connectionWindow.Port_Open += PortOpenRequest;
-            connectionWindow.Show();
+            _connectionWindow = new Connection_Window { Owner = this };
+            _connectionWindow.Port_Open += PortOpenRequest;
+            _connectionWindow.Show();
         }
 
         private void PortOpenRequest(SerialPort port)
         {
             try
             {
-                rs232.Close();
+                _rs232.Close();
             }
             catch{}
 
-            rs232 = new RS232();
-            rs232.PortOpen(port);
-            packetSplitter = new RecPacketSplitter(packetDescription, rs232);
-            packetSplitter.PacketReceivedEvent += PacketReceived;
+            _rs232 = new RS232();
+            _rs232.PortOpen(port);
+            _packetSplitter = new RecPacketSplitter(_packetDescription, _rs232);
+            _packetSplitter.PacketReceivedEvent += OnPacketReceivedEvent;
         }
 
-        private void PacketReceived(object sender, string data)
+        private void OnPacketReceivedEvent(object sender, string data)
         {
             IRecRobotPacket packet = new RecRobotPacket(data);
-            IRobotStatusUpdate robotStatusUpdate = robotStatusUpdateFactory.GetRobotStatusUpdate(packet);
+            IRobotStatusUpdate robotStatusUpdate = _robotStatusUpdateFactory.GetRobotStatusUpdate(packet);
             robotStatusUpdate.Execute(this);
         }
 
@@ -101,9 +99,9 @@ namespace MobileRobotControl
             }
             else
             {
-                delObject = value;
-                posUpdateDelegate = UpdateX;
-                Dispatcher.BeginInvoke(posUpdateDelegate, delObject);
+                _delObject = value;
+                _posUpdateDelegate = UpdateX;
+                Dispatcher.BeginInvoke(_posUpdateDelegate, _delObject);
             }
         }
 
@@ -115,9 +113,9 @@ namespace MobileRobotControl
             }
             else
             {
-                delObject = value;
-                posUpdateDelegate = UpdateY;
-                Dispatcher.BeginInvoke(posUpdateDelegate, delObject);
+                _delObject = value;
+                _posUpdateDelegate = UpdateY;
+                Dispatcher.BeginInvoke(_posUpdateDelegate, _delObject);
             }
         }
 
@@ -129,9 +127,9 @@ namespace MobileRobotControl
             }
             else
             {
-                delObject = value;
-                posUpdateDelegate = UpdateAngle;
-                Dispatcher.BeginInvoke(posUpdateDelegate, delObject);
+                _delObject = value;
+                _posUpdateDelegate = UpdateAngle;
+                Dispatcher.BeginInvoke(_posUpdateDelegate, _delObject);
             }
         }
 
@@ -144,51 +142,56 @@ namespace MobileRobotControl
             }
             else
             {
-                delObjects[0] = lEngine;
-                delObjects[1] = rEngine;
-                engUpdateDelegate = UpdateEngines;
-                Dispatcher.BeginInvoke(engUpdateDelegate, delObjects);
+                _delObjects[0] = lEngine;
+                _delObjects[1] = rEngine;
+                _engUpdateDelegate = UpdateEngines;
+                Dispatcher.BeginInvoke(_engUpdateDelegate, _delObjects);
             }
         }
 #endregion
 
         private void SetXButton_Click(object sender, RoutedEventArgs e)
         {
-            RobotCommand = new SetGoalXCommand((float) 40.0, packetDescription);
-            PosXLabel.Content = RobotCommand.Content;
-            RobotCommand.Execute(rs232);
+            _robotCommand = new SetGoalXCommand((float) 40.0, _packetDescription);
+            PosXLabel.Content = _robotCommand.Content;
+            _robotCommand.Execute(_rs232);
         }
 
         private async void ManualControlButton_Click(object sender, RoutedEventArgs e)
         {
-            RobotControlDockPanel.Children.Add(ManualControlGrid);
- 
+            await SwapGridFromBot(ManualControlGrid);
+            _isManualControl = true;
+        }
+
+        private async Task SwapGridFromBot(Grid gridToDisplay)
+        {
+            RobotControlDockPanel.Children.Add(gridToDisplay);
+
             int ssize = (int)_currentlyDisplayedGrid.ActualHeight / 20;
             while (_currentlyDisplayedGrid.ActualHeight > 0)
             {
                 if (_currentlyDisplayedGrid.ActualHeight < 2 * ssize)
                 {
                     _currentlyDisplayedGrid.Height = 0;
-                    ManualControlGrid.Height = Double.NaN;
+                    gridToDisplay.Height = Double.NaN;
                 }
                 else
                 {
                     _currentlyDisplayedGrid.Height = (int)_currentlyDisplayedGrid.ActualHeight - ssize;
-                    ManualControlGrid.Height = ManualControlGrid.ActualHeight + ssize;
+                    gridToDisplay.Height = gridToDisplay.ActualHeight + ssize;
                 }
-                    
+
 
                 await Task.Delay(1);
             }
             RobotControlDockPanel.Children.Remove(_currentlyDisplayedGrid);
-            _currentlyDisplayedGrid = ManualControlGrid;
-            isManualControl = true;
+            _currentlyDisplayedGrid = gridToDisplay;
         }
 
         private async void AutoControlButton_Click(object sender, RoutedEventArgs e)
         {
-            SwapGridFromTop(PointFollowGrid);
-            isManualControl = false;
+            await SwapGridFromTop(PointFollowGrid);
+            _isManualControl = false;
         }
 
         private async Task SwapGridFromTop(Grid gridToDisplay)
@@ -219,21 +222,20 @@ namespace MobileRobotControl
             _currentlyDisplayedGrid = gridToDisplay;
         }
 
-        private async void SendControl()
+        private async void StartControlLoop()
         {
             while (true)
             {
-                if (rs232 != null && rs232.IsOpen && isManualControl)
+                if (_rs232 != null && _rs232.IsOpen && _isManualControl)
                 {
                     var enginesFill = _robotControl.EnginesFill;
-                    RobotCommand = new SetEnginesCommand(enginesFill.LeftEngineFill, enginesFill.RightEngineFill, packetDescription);
-                    RobotCommand.Execute(rs232);
+                    _robotCommand = new SetEnginesCommand(enginesFill.LeftEngineFill, enginesFill.RightEngineFill, _packetDescription);
+                    _robotCommand.Execute(_rs232);
                 }
 
                 await Task.Delay(200);
             }
         }
-
 
         private void Window_PreviewKeyDown_1(object sender, KeyEventArgs e)
         {

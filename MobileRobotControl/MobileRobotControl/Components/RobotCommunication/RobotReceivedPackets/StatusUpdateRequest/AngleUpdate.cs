@@ -5,16 +5,16 @@ namespace MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.
 {
     public class AngleUpdate: IRobotStatusUpdate
     {
-        private float angle;
+        private readonly float _angle;
 
         public AngleUpdate(string content)
         {
-            angle = Convert.ToSingle(content) / 100;
+            _angle = Convert.ToSingle(content) / 100;
         }
 
         public void Execute(IRobotDataPresenter robotDataPresenter)
         {
-            robotDataPresenter.UpdateAngle(angle);
+            robotDataPresenter.UpdateAngle(_angle);
         }
     }
 }

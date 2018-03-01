@@ -6,15 +6,18 @@ namespace MobileRobotControl.Components.RobotCommunication.RobotCommands
 {
     public class SetEnginesCommand : IRobotCommand
     {
-        private char lE, rE, dlE, drE;
+
         public string Content { get; private set; }
 
         public SetEnginesCommand(int lEngine, int rEngine, IPacketDescription packetDescription)
         {
+            char lEngineDir = (char)0;
+            char rEngineDir = (char)0;
+
             if (lEngine < 0)
-                dlE = (char) 1;
+                lEngineDir = (char) 1;
             if (rEngine < 0)
-                drE = (char) 1;
+                rEngineDir = (char) 1;
 
             lEngine = Math.Abs(lEngine);
             rEngine = Math.Abs(rEngine);
@@ -24,11 +27,8 @@ namespace MobileRobotControl.Components.RobotCommunication.RobotCommands
                 throw new ArgumentOutOfRangeException("Engines absolute value larger than 100");
             }
             
-            lE = (char) lEngine;
-            rE = (char) rEngine;
-
-            Content = packetDescription.PacketStart + "E" + dlE +
-                      lE + drE + rE + packetDescription.PacketEnd;
+            Content = packetDescription.PacketStart + "E" + lEngineDir +
+                      (char)lEngine + rEngineDir + (char)rEngine + packetDescription.PacketEnd;
         }
 
         public void Execute(IConnector connection)

@@ -5,16 +5,16 @@ namespace MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.
 {
     public class XPosUpdate : IRobotStatusUpdate
     {
-        private float x;
+        private readonly float _x;
 
         public XPosUpdate(string content)
         {
-            x = Convert.ToSingle(content) / 100;
+            _x = Convert.ToSingle(content) / 100;
         }
 
         public void Execute(IRobotDataPresenter robotDataPresenter)
         {
-            robotDataPresenter.UpdateX(x);
+            robotDataPresenter.UpdateX(_x);
         }
     }
 }

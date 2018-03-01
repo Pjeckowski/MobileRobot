@@ -17,6 +17,7 @@ namespace MobileRobotControl.Components.RobotCommunication.RobotCommands
                 Content = (y % 10).ToString();
                 y /= 10;
             }
+
             char[] contentCharArray = Content.ToCharArray();
             Array.Reverse(contentCharArray);
             Content = packetDescription.PacketStart + "Y" +

@@ -14,16 +14,16 @@
 // I/O CONFIGURATION
 #define CEDDR       DDRB
 #define CEPORT		PORTB
-#define CE 			PB2
+#define CE 			PB0
 
 #define CSNDDR      DDRB
 #define CSNPORT		PORTB
-#define CSN 		PB4
+#define CSN 		PB2
 
 #define IRQDDR      DDRB
 #define IRQPIN   	PINB
 #define IRQPORT     PORTB
-#define IRQ			PB3
+#define IRQ			PB1
 
 // I/O CONFIGURATION
 
@@ -85,7 +85,7 @@ void SPI_init(char MASTR, char DIVIDE)
 {
 	if(MASTR == 1)//if master then set master bit and sck speed
 	{
-		DDRB |= (1 << DDB5) | (1 << DDB7) | (1 << DDB4); //MOSI,SCK,SS OUTPUT
+		DDRB |= (1 << DDB3) | (1 << DDB5) | (1 << DDB2); //MOSI,SCK,SS OUTPUT
 
 		SPCR |= (1 << MSTR);
 
@@ -110,7 +110,7 @@ void SPI_init(char MASTR, char DIVIDE)
 	}
 	else
 	{
-		DDRB |= (1 << PB6); //MISO OUTPUT in slave
+		DDRB |= (1 << PB4); //MISO OUTPUT in slave
 	}
 
 	CSNPORT |= (1 << CSN); // RF doesn't listen to uC

@@ -124,6 +124,7 @@ namespace MobileRobotControl
                 {
                     MessageBox.Show("Chosen port's parameters doesn't meet robot's requirements. Even best program can't stop dumb ppl from doing dumb things!");
                     Port = new SerialPort();
+                    Port.PortName = Port_CB.SelectedItem.ToString();
                     Port.BaudRate = Convert.ToInt32(Speed_CB.SelectedItem.ToString());
                     
                     if (Parity_CB.SelectedItem.ToString() == "None")

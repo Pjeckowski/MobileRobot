@@ -7,8 +7,9 @@
 
 #include<avr/io.h>
 #include<util/delay.h>
-#include "nrf24l01\rf24l01.h"
+#include "rf24l01.h"
 #include "uart\my_uart.h"
+#include "robot\protocol.h"
 #include "robot\engine.h"
 #include "memops\memops.h"
 #include <String.h>
@@ -18,6 +19,7 @@
 #define time1ms 255 -31
 #define FORW 	0
 #define BACK 	1
+#define PERIOD 50
 
 //robot positions
 float posX = 0, posY = 0, angle = 0;
@@ -33,8 +35,8 @@ volatile uint8_t radioReceived = 0;
 volatile uint8_t radioResetTimer = 0;
 
 //robot control
-uint8_t lEngineFill = 0, rEngineFill = 0;
-uint8_t aLEngineFill = 0, aREngineFill = 0;
+int lEngineFill = 0, rEngineFill = 0;
+int aLEngineFill = 0, aREngineFill = 0;
 uint8_t lEngineDir = 0, rEngineDir = 0;
 uint8_t isFollowingPoint = 0, isFollowingLine = 0;
 uint8_t maxEngineFill = 0;
@@ -47,7 +49,6 @@ void SetEngines();
 void ResetRadioIfNeeded();
 void radioRec();
 uint8_t dataWorkout();
-uint8_t* getTransmitData(uint8_t request);
 void sendInfo();
 
 volatile uint8_t irCounter, engCounter, wasInterrupt, wasOverflow;
@@ -62,16 +63,17 @@ void setINT0risingEdgeInterrupt()
 
 int main()
 {
-	//PA0 jako wejscie podci¹gniête do VCC
-	DDRA = 0b00011110;
-	PORTA = 0b00000001;
-	DDRD |= 0b01000000;
+	//MCUCSR |= (1<<JTD);
+	//MCUCSR |= (1<<JTD);
+
 	_delay_ms(1000);
 	SPI_init(1, 0); //master, fosc/128
 	_delay_ms(1000);
 	radio_init(1, 0, 5);//receiver, 5b danych
 	_delay_ms(100);
+
 	uart_init();
+	engine_Init();
 
 	TCCR0 |= (1 << CS02);
 	TIMSK |= (1 << TOIE0);
@@ -82,7 +84,7 @@ int main()
 	uart_sendString(table);
 	uart_sendByteAsChar(radio_ReadRegister(STATUS));
 	_delay_ms(2000);
-	PORTB |= (1 << CE);
+	radio_startListenning();
 
 
 	while(1)
@@ -95,7 +97,7 @@ int main()
 
 ISR(INT0_vect)
 {
-	if(PINB & (1 << PB0 ))
+	if(engine_IsEng1RotatingBack())
 	PORTD |= (1 << PD6);
 	else
 	PORTD &= ~(1 << PD6);
@@ -108,10 +110,10 @@ ISR(TIMER0_OVF_vect)
 	wasInterrupt = 1;
 	suppCounter ++;
 	engCounter ++;
-	if(engCounter > 100)
+	if(engCounter > PERIOD)
 	{
 		engCounter = 1;
-		wasOverflow = 1;
+		wasOverflow++;
 	}
 	if(suppCounter >= 1000)
 	{
@@ -130,18 +132,18 @@ void SetEngines()
 		{
 			if(aLEngineFill < lEngineFill)
 			{
-				if(aLEngineFill < 35)
+				if(aLEngineFill < 15)
 				{
-					aLEngineFill = 35;
+					aLEngineFill = 15;
 				}
 				else
 				aLEngineFill++;
 			}
 			if(aREngineFill < rEngineFill)
 			{
-				if(aREngineFill < 35)
+				if(aREngineFill < 15)
 				{
-					aREngineFill = 35;
+					aREngineFill = 15;
 				}
 				else
 					aREngineFill ++;
@@ -156,46 +158,32 @@ void SetEngines()
 		if(engCounter <= aREngineFill)
 		{
 			if(rEngineDir == FORW)
-			{
-				PORTA &= ~(1 << PA2);
-				PORTA |= 1 << PA1;
-			}
+				engine_Eng1DriveForward();
 			else
-			{
-				PORTA &= ~(1 << PA1);
-				PORTA |= 1 << PA2;
-			}
+				engine_Eng1DriveBack();
 		}
 		else
 		{
-			PORTA &= ~(1 << PA1);
-			PORTA &= ~(1 << PA2);
+			engine_Eng1Stop();
 		}
 
 		if(engCounter <= aLEngineFill)
 		{
-			if(lEngineDir == BACK)
-			{
-				PORTA &= ~(1 << PA4);
-				PORTA |= 1 << PA3;
-			}
+			if(lEngineDir == FORW)
+				engine_Eng2DriveForward();
 			else
-			{
-				PORTA &= ~(1 << PA3);
-				PORTA |= 1 << PA4;
-			}
+				engine_Eng2DriveBack();
 		}
 		else
 		{
-			PORTA &= ~(1 << PA3);
-			PORTA &= ~(1 << PA4);
+			engine_Eng2Stop();
 		}
 	}
 }
 
 void ResetRadioIfNeeded()
 {
-	if(wasOverflow)
+	if(wasOverflow >= 2)
 	{
 		wasOverflow = 0;
 		if(radioReceived)
@@ -214,7 +202,17 @@ void ResetRadioIfNeeded()
 	}
 }
 
+int isTimeForAction()
+{
+	return irCounter == radioActionTimer ||
+			irCounter == (radioActionTimer + 1) ||
+			irCounter == (radioActionTimer + 2);
+}
 
+void setNextActionTime(int delayMS)
+{
+	radioActionTimer = irCounter + delayMS;
+}
 
 ///Function manages state of the radio transceiver,
 ///sends and receives data.
@@ -236,7 +234,7 @@ void radioRec()
 				{
 					radio_switchTransmiter();
 					RadioState = WFBT;
-					radioActionTimer = irCounter + 28;
+					setNextActionTime(28);
 				}
 				else
 				{
@@ -247,7 +245,7 @@ void radioRec()
 		}
 		case WFBT:
 		{
-			if(irCounter == radioActionTimer)
+			if(isTimeForAction())
 			{
 				RadioState = TRA1;
 			}
@@ -256,37 +254,37 @@ void radioRec()
 		case TRA1:
 		{
 			radio_preparePayload(radioSendBufor, 5);
-			radioActionTimer = irCounter + 10;
+			setNextActionTime(10);
 			RadioState = TRA2;
 			break;
 		}
 		case TRA2:
 		{
-			if(irCounter == radioActionTimer)
+			if(isTimeForAction())
 			{
 				radio_transmit();
-				radioActionTimer = irCounter + 10;
+				setNextActionTime(10);
 				RadioState = WFTR;
 			}
 			break;
 		}
 		case WFTR:
 		{
-			if(radio_isInterruptRequest() || irCounter == radioActionTimer)
+			if(radio_isInterruptRequest() || isTimeForAction())
 			{
 				radio_reset();
 				radio_switchReceiver();
-				radioActionTimer = irCounter + 10;
+				setNextActionTime(10);
 				RadioState = WFBR;
 			}
 			break;
 		}
 		case WFBR:
 		{
-			if(irCounter == radioActionTimer)
+			if(isTimeForAction())
 			{
 				RadioState = REC;
-				PORTB |= (1 << CE);
+				radio_startListenning();
 			}
 			break;
 		}
@@ -295,8 +293,8 @@ void radioRec()
 			lEngineFill = rEngineFill = 0;
 			isFollowingPoint = 0, isFollowingLine = 0;
 			radio_reset();
-			radio_switchReceiver();
-			radioActionTimer = irCounter + 10;
+			radio_init(1, 0, 5);//receiver, 5b data
+			setNextActionTime(20);
 			RadioState = WFBR;
 			break;
 		}
@@ -358,8 +356,12 @@ uint8_t dataWorkout(uint8_t* data)
 		}
 		case SETEF:
 		{
-			lEngineFill = (data[1] & 0b01111111);
-			rEngineFill = (data[2] & 0b01111111);
+			float lEF = (float) (data[1] & 0b01111111);
+			float rEF = (float) (data[2] & 0b01111111);
+			lEF = lEF / 100.0 * (float) PERIOD;
+			rEF = rEF / 100.0 * (float) PERIOD;
+			lEngineFill = (int) lEF;
+			rEngineFill = (int) rEF;
 			if(lEngineFill)
 			{
 				if(data[1] & 0b10000000)
@@ -406,11 +408,5 @@ uint8_t dataWorkout(uint8_t* data)
 			return 0;
 		}
 	}
-}
-
-uint8_t* getTransmitData(uint8_t request)
-{
-	radioRecBufor[0] += 1;
-	return radioRecBufor;
 }
 

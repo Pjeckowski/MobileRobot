@@ -15,7 +15,7 @@
 #include<util/delay.h>
 #include<avr/pgmspace.h>
 #include<string.h>
-#include "robot\engine.h"
+#include "robot\protocol.h"
 #include "memops\memops.h"
 
 #define USETX 'X'

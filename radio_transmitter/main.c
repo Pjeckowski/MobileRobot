@@ -57,10 +57,6 @@ volatile uint16_t counter=0;
 int main()
 {
 	DDRD=0b01000000;
-	//PA0 jako wejscie podci¹gniête do VCC
-	DDRA = 0b00000000;
-	PORTA = 0b00000001;
-
 
 	_delay_ms(2000);
 
@@ -305,7 +301,8 @@ void radioTransmit()
 				else
 				{
 					radio_reset();
-					radio_switchTransmiter();
+					radio_init(0, 0, 5);
+					radio_actionTimer = irCounter + 10;
 					RadioState = WFBT;
 				}
 			}

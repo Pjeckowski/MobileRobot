@@ -222,7 +222,7 @@ namespace MobileRobotControl
             _currentlyDisplayedGrid = gridToDisplay;
         }
 
-        private async void StartControlLoop()
+        private async void  StartControlLoop()
         {
             while (true)
             {
@@ -233,7 +233,7 @@ namespace MobileRobotControl
                     _robotCommand.Execute(_rs232);
                 }
 
-                await Task.Delay(200);
+                await Task.Delay(100);
             }
         }
 

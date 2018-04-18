@@ -5,6 +5,8 @@
         XUpdate = 'X',
         YUpdate = 'Y',
         AUpdate = 'A',
-        EFUpdate = 'E'
+        EFUpdate = 'E',
+        WSizeUpdate = 'W',
+        WSpacingUpdate = 'S'
     }
 }

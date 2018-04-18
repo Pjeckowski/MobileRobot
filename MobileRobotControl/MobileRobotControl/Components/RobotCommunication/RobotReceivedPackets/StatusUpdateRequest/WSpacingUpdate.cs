@@ -3,19 +3,18 @@ using MobileRobotControl.Components.RobotDataPresenters;
 
 namespace MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.StatusUpdateRequest
 {
-    public class AngleUpdate: IRobotStatusUpdate
+    public class WSpacingUpdate : IRobotStatusUpdate
     {
-        private readonly double _angle;
+        private readonly double _wheelSpacing;
 
-        public AngleUpdate(string content)
+        public WSpacingUpdate(string content)
         {
-            _angle = Convert.ToDouble(content) / 10000.0;
+            _wheelSpacing = Convert.ToDouble(content) / 10000.0;
         }
 
         public void Execute(IRobotDataPresenter robotDataPresenter)
         {
-            var degrees = _angle * 180.0 / Math.PI;
-            robotDataPresenter.UpdateAngle(degrees);
+            robotDataPresenter.UpdateWheelSpacing(_wheelSpacing);
         }
     }
 }

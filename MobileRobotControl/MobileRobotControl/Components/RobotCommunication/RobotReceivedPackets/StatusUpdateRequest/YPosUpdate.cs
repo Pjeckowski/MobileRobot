@@ -5,11 +5,11 @@ namespace MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.
 {
     public class YPosUpdate : IRobotStatusUpdate
     {
-        private readonly float _y;
+        private readonly double _y;
 
         public YPosUpdate(string content)
         {
-            _y = Convert.ToSingle(content) / 100;
+            _y = Convert.ToDouble(content) / 10000.0;
         }
 
         public void Execute(IRobotDataPresenter robotDataPresenter)

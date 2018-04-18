@@ -49,7 +49,7 @@ all: radio_transmitter.elf secondary-outputs
 radio_transmitter.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: AVR C Linker'
-	avr-gcc -Wl,-Map,radio_transmitter.map -mmcu=atmega32 -o "radio_transmitter.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	avr-gcc -Wl,-Map,radio_transmitter.map -mmcu=atmega8 -o "radio_transmitter.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -73,7 +73,7 @@ radio_transmitter.eep: radio_transmitter.elf
 
 sizedummy: radio_transmitter.elf
 	@echo 'Invoking: Print Size'
-	-avr-size --format=avr --mcu=atmega32 radio_transmitter.elf
+	-avr-size --format=avr --mcu=atmega8 radio_transmitter.elf
 	@echo 'Finished building: $@'
 	@echo ' '
 

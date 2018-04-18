@@ -1,6 +1,8 @@
 #ifndef MEMOPS_H_
 #define MEMOPS_H_
 
+#include<String.h>
+
 float getValFromBytes(uint8_t bytes[4]);
 void getBytes(double data, uint8_t* bytes);
 

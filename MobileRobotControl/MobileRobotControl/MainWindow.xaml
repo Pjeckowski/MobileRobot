@@ -9,8 +9,6 @@
             CornerRadius="100,100,100,100"
             />
     </WindowChrome.WindowChrome>
-    
-    
     <Grid>
         <Grid.Resources>
             <Style x:Key="LEL" TargetType="{x:Type MenuItem}" >
@@ -77,8 +75,8 @@
                                 </Grid.ColumnDefinitions>
                                 <Label Content="Pilot connection" FontWeight="Regular" Grid.Column="0" HorizontalAlignment="Left" />
                                 <Label Content="Robot connection" FontWeight="Regular" Grid.Column="1" HorizontalAlignment="Left" />
-                                <Label Content="Batery"  Grid.Column="2" FontWeight="Regular" HorizontalAlignment="Left" />
-
+                                <Label Content="Latency"  Grid.Column="2" FontWeight="Regular" HorizontalAlignment="Left" />
+                                <Label x:Name="LatencyLabel" Content="Latency"  Grid.Column="2" FontWeight="Regular" HorizontalAlignment="Left" VerticalAlignment="Center" />
                             </Grid>
                             <Grid Grid.Row="1">
                                 <Grid.ColumnDefinitions>
@@ -93,7 +91,7 @@
                                     <RowDefinition Height="4*"/>
                                     <RowDefinition Height="6*"/>
                                 </Grid.RowDefinitions>
-                                <Label x:Name="PositionLabel"  FontSize="12" Content="Position" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                                <Label x:Name="PositionLabel" Margin="0,5,0,0"  FontSize="12" Content="Position" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top" />
                                 <Label x:Name="PosXLabel" FontWeight="Regular" FontSize="14" Content="Pos X:" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 <Label x:Name="RobotPosXLabel" FontSize="14" Grid.Row="1" Content="0.0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 <Label Content="Pos Y: " FontWeight="Regular" Grid.Row="1" FontSize="14" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -139,8 +137,8 @@
                 <GroupBox Grid.Column="1" Header = "Robot Control" FontWeight="Black"  BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5,5,5,5">
                         <Grid x:Name="RobotControlGrid">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="*" MaxHeight="70"/>
-                                <RowDefinition Height="2*"/>
+                                <RowDefinition Height="2*" MaxHeight="70"/>
+                                <RowDefinition Height="5*"/>
                             </Grid.RowDefinitions>
                             <DockPanel>
                                 <Grid>
@@ -169,22 +167,42 @@
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="*"/>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="*"/>
-                                    </Grid.RowDefinitions>
+                                        <RowDefinition Height="2*"/>
+                                        <RowDefinition Height="2*"/>
+                                </Grid.RowDefinitions>
 
-                                    <Label Content="Point Follower" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" />
-                                <Label Content="pos X" FontWeight="Regular" Grid.Column="0"  Grid.Row="0"  Margin="-4,8,0,0" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
-                                <Label Content="pos Y" FontWeight="Regular" Grid.Column="1"  Grid.Row="0"  Margin="-4,8,0,0" VerticalAlignment="Bottom" HorizontalAlignment="Center" />
-                                <TextBox Grid.Column="0" Grid.Row="1" Margin="4,-2,4,2" MaxHeight="30"  Background="#3f3f46" Foreground="AliceBlue" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-                                <TextBox Grid.Column="1" Grid.Row="1" Margin="4,-2,4,2" MaxHeight="30" Background="#3f3f46" Foreground="AliceBlue" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-                                <Button x:Name="SetXButton" FontWeight="Regular" Content="Go" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Background="#242424" Foreground="AliceBlue"  Margin="4,2" MaxHeight="40" MaxWidth="160" Click="SetXButton_Click" />
-                                <Button x:Name="ManualControlButton" FontWeight="Regular" Content="Man Control" Grid.Column="0" Grid.Row="3" Background="#242424" Foreground="AliceBlue" Margin="4,2" MaxHeight="40" MaxWidth="160" Click="ManualControlButton_Click"/>
-                                <Button x:Name="LineFollowerButton" FontWeight="Regular" Content="Line Follower" Grid.Column="1" Grid.Row="3" Background="#242424" Foreground="AliceBlue" Margin="4,2" MaxHeight="40" MaxWidth="160" Click="ManualControlButton_Click"/>
+                                <Label Content="Point Follower" Margin="0,5,0,0" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" />
+                                <Label Content="Position X" FontWeight="Regular" Grid.Column="0"  Grid.Row="1"   VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
+                                <Label Content="Position Y" FontWeight="Regular" Grid.Column="1"  Grid.Row="1"   VerticalAlignment="Bottom" HorizontalAlignment="Center" />
+                                <TextBox Grid.Column="0" Grid.Row="2" Margin="4,-2,4,2" MaxHeight="45"  Background="#3f3f46" Foreground="AliceBlue" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                                <TextBox Grid.Column="1" Grid.Row="2" Margin="4,-2,4,2" MaxHeight="45" Background="#3f3f46" Foreground="AliceBlue" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                                <Button x:Name="BackToMainButton2" FontWeight="Regular" Content="Back" Grid.Column="0" Grid.Row="3" Background="#242424" Foreground="AliceBlue" Margin="4,2" MaxHeight="40" MaxWidth="160" Click="BackToMainButton2_Click"/>
+                                <Button x:Name="StartPointFollowButton" FontWeight="Regular" Content="Go!" Grid.Column="1" Grid.Row="3" Background="#242424" Foreground="AliceBlue"  Margin="4,2" MaxHeight="40" MaxWidth="160" />
+                                
                             </Grid>
-                                <Grid x:Name="ManualControlGrid" Height ="Auto">
+                            <Grid x:Name="ManualControlGrid" Height ="0" DockPanel.Dock="Top">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="2*"/>
+                                        <RowDefinition Height="2*"/>
+                                        <RowDefinition Height="2*"/>
+                                        <RowDefinition Height="2*"/>
+                                    </Grid.RowDefinitions>
+                                <Label Content="Manual Control" Margin="0,5,0,0" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"  />
+                                <Image x:Name="AUpImage" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" MaxHeight="60" MaxWidth="60" />
+                                <Image x:Name="ADownImage" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxHeight="60" MaxWidth="60" />
+                                <Image x:Name="ALeftImage" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Stretch" MaxHeight="60" MaxWidth="60" />
+                                <Image x:Name="ARightImage" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" MaxHeight="60" MaxWidth="60" />
+
+                                <Button Grid.Row="3" Grid.ColumnSpan="3" x:Name="BackToMainButton1" Content="Back" Foreground="AliceBlue" FontWeight="Regular" Grid.Column="0" Background="#242424" Margin="4,2" MaxHeight="40" MaxWidth="160" Click="BackToMainButton1_Click"/>
+                            </Grid>
+
+                            <Grid x:Name="MainGrid" DockPanel.Dock="Top" Height ="0"  VerticalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
@@ -192,22 +210,63 @@
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="2*"/>
                                         <RowDefinition Height="2*"/>
-                                        <RowDefinition Height="2*"/>
                                     </Grid.RowDefinitions>
-                                <Label Content="Manual Control" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"  />
-                                <Image x:Name="AUpImage" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" MaxHeight="60" MaxWidth="60" />
-                                <Image x:Name="ADownImage" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MaxHeight="60" MaxWidth="60" />
-                                <Image x:Name="ALeftImage" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Stretch" MaxHeight="60" MaxWidth="60" />
-                                <Image x:Name="ARightImage" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" MaxHeight="60" MaxWidth="60" />
-                                <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Button x:Name="PointFollowButton" Content="Point Follower" Foreground="AliceBlue" FontWeight="Regular" Grid.Column="0" Background="#242424" Margin="4,2" MaxHeight="40" MaxWidth="160" Click="AutoControlButton_Click"/>
-                                    <Button x:Name="LineFollowButton" Content="Line Follower" Foreground="AliceBlue" FontWeight="Regular" Grid.Column="1" Background="#242424" Margin="4,2" MaxHeight="40" MaxWidth="160" />
+                                <Label Content="Control Panel"  Margin="0,5,0,0" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"  />
+                                <Button x:Name="LineFollowButton1" Grid.Column="1" Grid.Row="1" Content="Line Follower" Foreground="AliceBlue" FontWeight="Regular"  Background="#242424" Margin="4,2" MaxHeight="40" MaxWidth="160" />
+                                <Button x:Name="ManualControlButton1" Grid.Column="0" Grid.Row="1" Content="Manual Control" Foreground="AliceBlue" FontWeight="Regular"  Background="#242424" Margin="4,2" MaxHeight="40" MaxWidth="160" Click="ManualControlButton_Click" />
+                                <Button x:Name="PointFollowButton1" Grid.Column="0" Grid.Row="2" Content="Point Follower" Foreground="AliceBlue" FontWeight="Regular"  Background="#242424" Margin="4,2" MaxHeight="40" MaxWidth="160" Click="PointFollowButton1_Click" />
+                                <Button x:Name="RobotSettingsButton1" Grid.Column="1" Grid.Row="2" Content="Robot Settings" Foreground="AliceBlue" FontWeight="Regular"  Background="#242424" Margin="4,2" MaxHeight="40" MaxWidth="160" Click="RobotSettingsButton1_Click" />
+                            </Grid>
+                            <Grid x:Name="RobotSettingsGrid" DockPanel.Dock="Top" Height ="0"  VerticalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="2*"/>
+                                    <RowDefinition Height="4*"/>
+                                    <RowDefinition Height="4*"/>     
+                                    <RowDefinition Height="3*"/>
+                                </Grid.RowDefinitions>
+
+                                <Label Content="RobotSettings" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" />
+   
+                               <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                                   <Grid.ColumnDefinitions>
+                                       <ColumnDefinition Width="*"/>
+                                       <ColumnDefinition Width="*"/>
+                                   </Grid.ColumnDefinitions>
+                                   <Grid.RowDefinitions>
+                                       <RowDefinition Height="*"/>
+                                       <RowDefinition Height="*"/>
+                                   </Grid.RowDefinitions>
+                                   <Label Content="Wheel Size" Grid.Column="0" Grid.Row="0" FontWeight="Regular" VerticalAlignment="Bottom" />
+                                   <TextBox x:Name="WheelSizeTextBox" Grid.Column="0" Grid.Row="1" Margin="4,-2,4,2" MaxHeight="45"  Background="#3f3f46" Foreground="AliceBlue" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                                    <Label Content="Wheel Spacing" Grid.Column="1" Grid.Row="0" FontWeight="Regular" VerticalAlignment="Bottom" />
+                                   <TextBox x:Name="WheelSpacingTextBox" Grid.Column="1" Grid.Row="1" Margin="4,-2,4,2" MaxHeight="45"  Background="#3f3f46" Foreground="AliceBlue" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                              </Grid>
+
+                                <Grid Grid.Row="2" Grid.ColumnSpan="2" Margin="3,0,3,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+
+                                    <Label Content="Position X" Grid.Column="0" Grid.Row="0" FontWeight="Regular" VerticalAlignment="Bottom" />
+                                    <TextBox x:Name="PositionXTextBox" Grid.Column="0" Grid.Row="1" Margin="4,-2,4,2" MaxHeight="45"  Background="#3f3f46" Foreground="AliceBlue" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                                    <Label Content="Position Y" Grid.Column="1" Grid.Row="0"  FontWeight="Regular" VerticalAlignment="Bottom" />
+                                    <TextBox x:Name="PositionYTextBox" Grid.Column="1" Grid.Row="1" Margin="4,-2,4,2" MaxHeight="45"  Background="#3f3f46" Foreground="AliceBlue" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                                    <Label Content="Angle" Grid.Column="2" Grid.Row="0"  FontWeight="Regular" VerticalAlignment="Bottom" />
+                                    <TextBox x:Name="AngleTextBox" Grid.Column="2" Grid.Row="1" Margin="4,-2,4,2" MaxHeight="45"  Background="#3f3f46" Foreground="AliceBlue" VerticalAlignment="Stretch" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
                                 </Grid>
-                                </Grid>
+                                <Button x:Name="SetRobotSettingsButton" Grid.Column="1" Grid.Row="3" Content="Set" Foreground="AliceBlue" FontWeight="Regular"  Background="#242424" Margin="4,2" MaxHeight="40" MaxWidth="160" Click="SetRobotSettingsButton_Click" />
+                                <Button x:Name="BackToMainButton" Grid.Column="0" Grid.Row="3" Content="Back" Foreground="AliceBlue" FontWeight="Regular"  Background="#242424" Margin="4,2" MaxHeight="40" MaxWidth="160" Click="BackToMainButton_Click" />
+                            </Grid>
                             </DockPanel>
                     </Grid>
                 </GroupBox>

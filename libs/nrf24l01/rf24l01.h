@@ -25,6 +25,12 @@
 #define IRQPORT     PORTB
 #define IRQ			PB3
 
+#define MOSI		PB5
+#define MISO		PB6
+#define SCK			PB7
+
+#define MMSDDR		DDRB //mosi, miso, sck ddr
+
 // I/O CONFIGURATION
 
 #define R 			0
@@ -73,19 +79,15 @@
 #define FEATURE	    0x1D
 
 
-uint8_t dummy[5];
-enum nrfMode {TRAN, RECE};
-enum nrfMode RadioMode;
-
-uint8_t dataToSend[5], dataCount = 0;
+uint8_t dummy[32];
 
 ////////////////////////////// SPI
 
-void SPI_init(char MASTR, char DIVIDE)
+void spi_Init(char MASTR, char DIVIDE)
 {
 	if(MASTR == 1)//if master then set master bit and sck speed
 	{
-		DDRB |= (1 << DDB5) | (1 << DDB7) | (1 << DDB4); //MOSI,SCK,SS OUTPUT
+		MMSDDR |= (1 << MOSI) | (1 << SCK) | (1 << CSN); //MOSI,SCK,SS OUTPUT
 
 		SPCR |= (1 << MSTR);
 
@@ -110,7 +112,7 @@ void SPI_init(char MASTR, char DIVIDE)
 	}
 	else
 	{
-		DDRB |= (1 << PB6); //MISO OUTPUT in slave
+		MMSDDR |= (1 << MISO); //MISO OUTPUT in slave
 	}
 
 	CSNPORT |= (1 << CSN); // RF doesn't listen to uC
@@ -118,7 +120,7 @@ void SPI_init(char MASTR, char DIVIDE)
 	SPCR |= (1 << SPE);//enable SPI
 }
 
-inline char SPI_send(char data)
+inline char spi_Send(char data)
 {
 	SPDR = data;
 	while(! (SPSR & (1 << SPIF)));
@@ -132,16 +134,16 @@ char radio_ReadRegister(char reg)
 
 	CSNPORT &= ~(1 << CSN);
 	_delay_us(10);
-	SPI_send(reg);
+	spi_Send(reg);
 	_delay_us(10);
-	reg = SPI_send(0xFF);
+	reg = spi_Send(0xFF);
 	_delay_us(10);
 	CSNPORT |= (1<<CSN);
 	return reg;
 
 }
 
-void r_w_radio(uint8_t R_W, uint8_t reg, uint8_t data[], int count, uint8_t data_Received[])
+void radio_ReadWrite(uint8_t R_W, uint8_t reg, uint8_t data[], int count, uint8_t data_Received[])
 {
 
 	if(R_W == W)
@@ -152,7 +154,7 @@ void r_w_radio(uint8_t R_W, uint8_t reg, uint8_t data[], int count, uint8_t data
 	_delay_us(10);
 	CSNPORT &= ~(1 << CSN); // CSN goes low so the RF starts listening
 	_delay_us(10);
-	SPI_send(reg); //sends command to inform which reg to read or write
+	spi_Send(reg); //sends command to inform which reg to read or write
 	_delay_us(10);
 
 	int i=0;
@@ -161,13 +163,13 @@ void r_w_radio(uint8_t R_W, uint8_t reg, uint8_t data[], int count, uint8_t data
 		if(R_W == R && reg != W_TX_PAYLOAD)
 		{
 
-			data_Received[i] = SPI_send(0xFF);
+			data_Received[i] = spi_Send(0xFF);
 			_delay_us(10);
 		}
 		else
 		{
 
-			SPI_send(data[i]);
+			spi_Send(data[i]);
 			_delay_us(10);
 		}
 	}
@@ -175,19 +177,19 @@ void r_w_radio(uint8_t R_W, uint8_t reg, uint8_t data[], int count, uint8_t data
 
 }
 
-inline void radio_stopListenning()
+inline void radio_StopListenning()
 {
 	CEPORT &= ~(1 << CE);
 }
 
-void radio_init(uint8_t MODE, uint8_t SPEED, uint8_t D_WIDTH)
+void radio_Init(uint8_t MODE, uint8_t SPEED, uint8_t D_WIDTH)
 {
 	//MODE- 	0- TRANSM, else REC
 	//SPEED 	2- 2Mb, 1- 1Mb, else 250k
 	//D_WIDTH 	1- 1byte...5- 5 bytes, else 1 byte
 
-	radio_stopListenning();
 	CEDDR |= (1 << CE); // CE as output
+	radio_StopListenning();
 	IRQDDR &= ~(1 << IRQ); //IRQ as input
 	IRQPORT |= (1 << IRQ); //IRQ pin to VCC
 
@@ -195,21 +197,21 @@ void radio_init(uint8_t MODE, uint8_t SPEED, uint8_t D_WIDTH)
 	data[0] = 1;
 	//enable acknowledgment on data pipe 0
 	//enables data send or receive ACKnowlement in specified data pipe
-	r_w_radio(W,EN_AA,data,1,dummy);
+	radio_ReadWrite(W,EN_AA,data,1,dummy);
 
 	data[0] = 1;
 	//enables datapipes - from 0 to 5 - in this case only datapipe 0
-	r_w_radio(W,EN_RXADDR,data,1,dummy);
+	radio_ReadWrite(W,EN_RXADDR,data,1,dummy);
 
 	data[0] = 3;
 	//rf address width setup - 3 to 5 bytes addresses - for 1 to 3 value
 	//in this case value is 3 so address is 5 bytes long
-	r_w_radio(W,SETUP_AW,data,1,dummy);
+	radio_ReadWrite(W,SETUP_AW,data,1,dummy);
 
 	data[0] = 1;
 	//sets the rf channel frequency from 2400 to 2527 MHz, 1 Mhz per step
 	//in this case value is 1 so frequency is 2401MHz
-	r_w_radio(W,RF_CH,data,1,dummy);
+	radio_ReadWrite(W,RF_CH,data,1,dummy);
 
 	switch (SPEED)
 	{
@@ -220,7 +222,7 @@ void radio_init(uint8_t MODE, uint8_t SPEED, uint8_t D_WIDTH)
 	//bits 2:1 set the otput power, 11 - 0db
 	//bit 3 set the speed 0 - 1Mb, 1 - 2Mb
 	//if bit 5 is set, then speed is anyway 250k
-	r_w_radio(W,RF_SETUP,data,1,dummy);
+	radio_ReadWrite(W,RF_SETUP,data,1,dummy);
 
 	int i;
 	for(i = 0; i < 5; i++)
@@ -228,26 +230,20 @@ void radio_init(uint8_t MODE, uint8_t SPEED, uint8_t D_WIDTH)
 		data[i] = 0x12;
 	}
 	//sets the recive address for datapipe 0
-	r_w_radio(W, RX_ADDR_P0, data, 5, dummy);
+	radio_ReadWrite(W, RX_ADDR_P0, data, 5, dummy);
 
 	//sets the transmitter address for datapipe 0
-	r_w_radio(W, TX_ADDR, data, 5, dummy);
+	radio_ReadWrite(W, TX_ADDR, data, 5, dummy);
 
-	if(D_WIDTH >= 1 && D_WIDTH <= 5)
-	{
-		data[0] = D_WIDTH;
-	}
-	else
-	{
-		data[0] = 1;
-	}
+
+	data[0] = D_WIDTH;
 	//sets the databytes amount: 1 to 32
-	r_w_radio(W, RX_PW_P0, data, 1, dummy);
+	radio_ReadWrite(W, RX_PW_P0, data, 1, dummy);
 
 	data[0] = 0b00100011;
 	//7:4 sets the delay between retransmisions - 0000: 250, 0001: 500, 0010:750us etc.
 	//3:0 sets the retransissions count - up to 15
-	r_w_radio(W, SETUP_RETR, data, 1, dummy);
+	radio_ReadWrite(W, SETUP_RETR, data, 1, dummy);
 
 
 	//MODE- 	0- TRANSM, else REC
@@ -260,77 +256,75 @@ void radio_init(uint8_t MODE, uint8_t SPEED, uint8_t D_WIDTH)
 	//bit 6: if 0, then IRQ ll go low after succesful data receive (as receiver)
 	if(MODE == 0)
 	{
-		RadioMode = TRAN;
 		data[0] = 0b00011110;
-		r_w_radio(W, CONFIG, data, 1, dummy);
+		radio_ReadWrite(W, CONFIG, data, 1, dummy);
 	}
 	else
 	{
-		RadioMode = RECE;
 		data[0] = 0b00011111;
-		r_w_radio(W, CONFIG, data, 1, dummy);
+		radio_ReadWrite(W, CONFIG, data, 1, dummy);
 	}
 }
 
-inline int radio_isInterruptRequest()
+inline int radio_IsInterruptRequest()
 {
 	return !(IRQPIN & (1 << IRQ));
 }
 
-inline int radio_wasTransmissionSuccessfull()
+inline int radio_WasTransmissionSuccessfull()
 {
 	return radio_ReadRegister(STATUS) == 0b00101110;
 }
 
-inline int radio_wasDataReceived()
+inline int radio_WasDataReceived()
 {
 	return radio_ReadRegister(STATUS) == 0b01000000;
 }
 
-inline int radio_isReceivingBuforEmpty()
+inline int radio_IsReceivingBuforEmpty()
 {
 	return radio_ReadRegister(STATUS) == 0b00001110;
 }
 
-inline void radio_startListenning()
+inline void radio_StartListenning()
 {
 	CEPORT |= (1 << CE);
 }
 
-void radio_reset()
+void radio_Reset()
 {
 	_delay_us(10);
 	CSNPORT &= ~(1 << CSN); //CSN low so the 24L01 listens
 	_delay_us(10);
-	SPI_send(WRITE_REG + STATUS);
+	spi_Send(WRITE_REG + STATUS);
 	_delay_us(10);
-	SPI_send(0b01110000);
+	spi_Send(0b01110000);
 	_delay_us(10);
 	CSNPORT |= (1 << CSN);
 }
 
-inline void radio_switchReceiver()
+inline void radio_SwitchReceiver()
 {
 	uint8_t data[5];
 	data[0] = 0b00011111;
-	r_w_radio(W, CONFIG, data, 1, dummy);
+	radio_ReadWrite(W, CONFIG, data, 1, dummy);
 }
 
-inline void radio_switchTransmiter()
+inline void radio_SwitchTransmiter()
 {
 	uint8_t data[5];
 	data[0] = 0b00011110;
-	r_w_radio(W, CONFIG, data, 1, dummy);
+	radio_ReadWrite(W, CONFIG, data, 1, dummy);
 }
 
-void radio_preparePayload(uint8_t data[], uint8_t count)
+void radio_PreparePayload(uint8_t data[], uint8_t count)
 {
-	radio_reset();
-	r_w_radio(R, FLUSH_TX, data, 0, dummy);
-	r_w_radio(R, W_TX_PAYLOAD, data, count, dummy);
+	radio_Reset();
+	radio_ReadWrite(R, FLUSH_TX, data, 0, dummy);
+	radio_ReadWrite(R, W_TX_PAYLOAD, data, count, dummy);
 }
 
-void radio_transmit()
+void radio_Transmit()
 {
 	CEPORT |= (1 << CE); //RF starts sending
 	_delay_us(200);
@@ -338,15 +332,15 @@ void radio_transmit()
 }
 
 
-void radio_receive(uint8_t data_Received[],uint8_t count)
+void radio_Receive(uint8_t data_Received[],uint8_t count)
 {
 	_delay_us(10);
 	CEPORT &= ~(1<<CE);
-	r_w_radio(R, R_RX_PAYLOAD, dummy, count, data_Received);
+	radio_ReadWrite(R, R_RX_PAYLOAD, dummy, count, data_Received);
 	_delay_us(10);
-	SPI_send(FLUSH_RX);
+	spi_Send(FLUSH_RX);
 	_delay_us(10);
-	radio_reset();
+	radio_Reset();
 	_delay_us(10);
 }
 

@@ -24,14 +24,17 @@
 #define UPFOL 'P'
 #define USTOP 'S'
 #define UENGS 'E'
+#define UGETB 'B' //get base parameters
+#define USETB 'C' //set base parameters
 #define UMAXE 'R'
+#define USETP 'N' // set robot positioN
 #define PAEND '\r'
 
 
 void uart_sendEngPacket(uint8_t header, uint8_t lEngine, uint8_t rEngine);
 void uart_sendPosPacket(uint8_t header, float data);
 void uart_sendPacket(uint8_t* data, uint8_t count);
-
+void uart_sendBasePacket(uint8_t header, float data);
 void uart_init()
 {
 	uint16_t baud=51;
@@ -162,29 +165,23 @@ void uart_sendPacket(uint8_t data[], uint8_t count)
 {
 	switch (data[0])
 	{
-		case GETX:
+		case GETPOS:
 		{
 			float temp = getValFromBytes(data + 1);
 			uart_sendPosPacket('X', temp);
-			break;
-		}
-		case GETY:
-		{
-			float temp = getValFromBytes(data + 1);
+			temp = getValFromBytes(data + 5);
 			uart_sendPosPacket('Y', temp);
+			temp = getValFromBytes(data + 9);
+			uart_sendPosPacket('A', temp);
+			uart_sendEngPacket('E', data[13], data[14]);
 			break;
 		}
-		case GETA:
+		case GETBA:
 		{
 			float temp = getValFromBytes(data + 1);
-			uart_sendPosPacket('A', temp);
-			break;
-		}
-		case GETEF:
-		{
-
-			uart_sendEngPacket('E', data[1], data[2]);
-			break;
+			uart_sendBasePacket('W', temp);
+			temp = getValFromBytes(data + 5);
+			uart_sendBasePacket('S', temp);
 		}
 		default:
 		{
@@ -197,7 +194,15 @@ void uart_sendPosPacket(uint8_t header, float data)
 {
 	uart_send('P');
 	uart_send(header);
-	uart_sendValueAsChar((int32_t)(data * 100));
+	uart_sendValueAsChar((int32_t)round(data * 10000.0));
+	uart_send('\r');
+}
+
+void uart_sendBasePacket(uint8_t header, float data)
+{
+	uart_send('P');
+	uart_send(header);
+	uart_sendValueAsChar((int32_t)round(data * 10000.0));
 	uart_send('\r');
 }
 

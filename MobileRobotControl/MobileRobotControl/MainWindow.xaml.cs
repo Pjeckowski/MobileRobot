@@ -28,7 +28,7 @@ namespace MobileRobotControl
         private IRecPacketSplitter _packetSplitter;
         private IPacketDescription _packetDescription;
         
-        delegate void UpdatePosDelegate(float value);
+        delegate void UpdatePosDelegate(double value);
         private UpdatePosDelegate _posUpdateDelegate;
         private object _delObject;
 
@@ -42,6 +42,9 @@ namespace MobileRobotControl
         private bool _isManualControl;
         private Grid _currentlyDisplayedGrid;
 
+        private DateTime previousTime;
+        private int times = 0;
+        private int timeinms;
 
         BitmapImage _aup_True, _aup_False, _adown_True, _adown_False, _aleft_True, _aleft_False, _aright_True, _aright_False;
 
@@ -53,13 +56,17 @@ namespace MobileRobotControl
             _robotStatusUpdateFactory = new RobotStatusUpdateFactory();
             _packetDescription = new PacketDescription("P","\r");
 
+            MainGrid.Height = Double.NaN;
             RobotControlDockPanel.Children.Remove(ManualControlGrid);
-            _currentlyDisplayedGrid = PointFollowGrid;
+            RobotControlDockPanel.Children.Remove(PointFollowGrid);
+            RobotControlDockPanel.Children.Remove(RobotSettingsGrid);
+            _currentlyDisplayedGrid = MainGrid;
             _robotControl = new SimpleRobotControl();
             RobotSpeedSlider.Focusable = false;
             SetSpeedButton.Focusable = false;
             RobotStopButton.Focusable = false;
             StartControlLoop();
+            previousTime = DateTime.Now;
         }
 
         private void ConnectMenuItem_Click(object sender, RoutedEventArgs e)
@@ -88,14 +95,27 @@ namespace MobileRobotControl
             IRecRobotPacket packet = new RecRobotPacket(data);
             IRobotStatusUpdate robotStatusUpdate = _robotStatusUpdateFactory.GetRobotStatusUpdate(packet);
             robotStatusUpdate.Execute(this);
+            if (!(robotStatusUpdate is XPosUpdate)) return;
+            var actualTime = DateTime.Now;
+            var diff = actualTime - previousTime;
+            previousTime = actualTime;
+            timeinms += (int) diff.TotalMilliseconds;
+            times++;
+            if (times != 10) return;
+            times = 0;
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                LatencyLabel.Content = timeinms/10 + "ms";
+                timeinms = 0;
+            }));
         }
 
 #region PositionUpdates
-        public void UpdateX(float value)
+        public void UpdateX(double value)
         {
             if (RobotPosXLabel.Dispatcher.CheckAccess())
             {
-                RobotPosXLabel.Content = value.ToString();
+                RobotPosXLabel.Content = value.ToString("0.00");
             }
             else
             {
@@ -105,11 +125,11 @@ namespace MobileRobotControl
             }
         }
 
-        public void UpdateY(float value)
+        public void UpdateY(double value)
         {
             if (RobotPosYLabel.Dispatcher.CheckAccess())
             {
-                RobotPosYLabel.Content = value.ToString();
+                RobotPosYLabel.Content = value.ToString("0.00");
             }
             else
             {
@@ -119,16 +139,44 @@ namespace MobileRobotControl
             }
         }
 
-        public void UpdateAngle(float value)
+        public void UpdateAngle(double value)
         {
             if (RobotAngleLabel.Dispatcher.CheckAccess())
             {
-                RobotAngleLabel.Content = value.ToString();
+                RobotAngleLabel.Content = value.ToString("0.00");
             }
             else
             {
                 _delObject = value;
                 _posUpdateDelegate = UpdateAngle;
+                Dispatcher.BeginInvoke(_posUpdateDelegate, _delObject);
+            }
+        }
+
+        public void UpdateWheelSize(double value)
+        {
+            if (WheelSizeTextBox.Dispatcher.CheckAccess())
+            {
+                WheelSizeTextBox.Text = value.ToString("0.000");
+            }
+            else
+            {
+                _delObject = value;
+                _posUpdateDelegate = UpdateWheelSize;
+                Dispatcher.BeginInvoke(_posUpdateDelegate, _delObject);
+            }
+        }
+
+        public void UpdateWheelSpacing(double value)
+        {
+            if (WheelSpacingTextBox.Dispatcher.CheckAccess())
+            {
+                WheelSpacingTextBox.Text = value.ToString("0.000");
+            }
+            else
+            {
+                _delObject = value;
+                _posUpdateDelegate = UpdateWheelSpacing;
                 Dispatcher.BeginInvoke(_posUpdateDelegate, _delObject);
             }
         }
@@ -152,15 +200,27 @@ namespace MobileRobotControl
 
         private void SetXButton_Click(object sender, RoutedEventArgs e)
         {
-            _robotCommand = new SetGoalXCommand((float) 40.0, _packetDescription);
+            _robotCommand = new SetGoalXCommand( 40.0, _packetDescription);
             PosXLabel.Content = _robotCommand.Content;
             _robotCommand.Execute(_rs232);
         }
 
         private async void ManualControlButton_Click(object sender, RoutedEventArgs e)
         {
-            await SwapGridFromBot(ManualControlGrid);
+            await SwapGridFromTop(ManualControlGrid);
             _isManualControl = true;
+        }
+        private async void RobotSettingsButton1_Click(object sender, RoutedEventArgs e)
+        {
+            await SwapGridFromBot(RobotSettingsGrid);
+
+            PositionXTextBox.Text = "0";
+            PositionYTextBox.Text = "0";
+            AngleTextBox.Text = "90";
+
+            await Task.Delay(100);
+            _robotCommand = new GetBaseParametersCommand(_packetDescription);
+            _robotCommand.Execute(_rs232);
         }
 
         private async Task SwapGridFromBot(Grid gridToDisplay)
@@ -188,10 +248,55 @@ namespace MobileRobotControl
             _currentlyDisplayedGrid = gridToDisplay;
         }
 
-        private async void AutoControlButton_Click(object sender, RoutedEventArgs e)
+        private async void PointFollowButton1_Click(object sender, RoutedEventArgs e)
         {
-            await SwapGridFromTop(PointFollowGrid);
+            await SwapGridFromBot(PointFollowGrid);
             _isManualControl = false;
+        }
+
+        private async void BackToMainButton_Click(object sender, RoutedEventArgs e)
+        {
+            await SwapGridFromTop(MainGrid);
+            _isManualControl = false;
+        }
+
+        private async void BackToMainButton1_Click(object sender, RoutedEventArgs e)
+        {
+            await SwapGridFromBot(MainGrid);
+            _isManualControl = false;
+        }
+
+        private async void BackToMainButton2_Click(object sender, RoutedEventArgs e)
+        {
+            await SwapGridFromTop(MainGrid);
+        }
+
+        private async void SetRobotSettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            double x, y, angle, wheelSize, wheelSpacing;
+            try
+            {
+                x = Convert.ToDouble(PositionXTextBox.Text);
+                y = Convert.ToDouble(PositionYTextBox.Text);
+                angle = Convert.ToDouble(AngleTextBox.Text);
+                wheelSize = Convert.ToDouble(WheelSizeTextBox.Text);
+                wheelSpacing = Convert.ToDouble(WheelSpacingTextBox.Text);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Wrong position parameters");
+                return;
+            }
+
+            await Task.Delay(100);
+            _robotCommand = new SetRobotPositionCommand(x, y, angle, _packetDescription);
+            _robotCommand.Execute(_rs232);
+            await Task.Delay(200);
+            _robotCommand = new SetBaseParametersCommand(wheelSize, wheelSpacing, _packetDescription);
+            _robotCommand.Execute(_rs232);
+            await Task.Delay(200);
+            _robotCommand = new GetBaseParametersCommand(_packetDescription);
+            _robotCommand.Execute(_rs232);
         }
 
         private async Task SwapGridFromTop(Grid gridToDisplay)
@@ -233,7 +338,7 @@ namespace MobileRobotControl
                     _robotCommand.Execute(_rs232);
                 }
 
-                await Task.Delay(100);
+                await Task.Delay(10);
             }
         }
 
@@ -323,5 +428,18 @@ namespace MobileRobotControl
             ADownImage.Source = _adown_False;
             ARightImage.Source = _aright_False;
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }

@@ -24,6 +24,14 @@ namespace MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.
                 {
                     return new YPosUpdate(packet.Content);
                 }
+                case RecPacketHeaders.WSizeUpdate:
+                {
+                    return new WSizeUpdate(packet.Content);
+                }
+                case RecPacketHeaders.WSpacingUpdate:
+                {
+                    return new WSpacingUpdate(packet.Content);
+                }
                 default:
                 {
                     throw new ArgumentException("Unrecognized packet header.");

@@ -40,7 +40,8 @@ void engine_Init()
 	//setting uC ports as inputs for encoder signal
 	E1DDR &= ~(1 << E1PBPIN);
 	E2DDR &= ~(1 << E2PBPIN);
-
+	PORTD |= (1 << E1PBPIN);
+	PORTD |= (1 << E2PBPIN);
 }
 
 inline int engine_IsEng1RotatingBack()

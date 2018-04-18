@@ -67,6 +67,11 @@
     </Compile>
     <Compile Include="Components\Connection\IConnector.cs" />
     <Compile Include="Components\Connection\RS232.cs" />
+    <Compile Include="Components\RobotCommunication\RobotCommands\GetBaseParametersCommand.cs" />
+    <Compile Include="Components\RobotCommunication\RobotCommands\SetBaseParametersCommand.cs" />
+    <Compile Include="Components\RobotCommunication\RobotCommands\SetRobotPositionCommand.cs" />
+    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\WSpacingUpdate.cs" />
+    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\WSizeUpdate.cs" />
     <Compile Include="Components\RobotControl\EnginesFill.cs" />
     <Compile Include="Components\RobotControl\IRobotControl.cs" />
     <Compile Include="Components\RobotCommunication\PacketDescriptions\IPacketDescription.cs" />

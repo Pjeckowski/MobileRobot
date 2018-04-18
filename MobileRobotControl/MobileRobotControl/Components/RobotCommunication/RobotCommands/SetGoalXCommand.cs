@@ -8,20 +8,12 @@ namespace MobileRobotControl.Components.RobotCommunication.RobotCommands
     {
         public string Content { get; private set; }
 
-        public SetGoalXCommand(float goalX, IPacketDescription packetDescription)
+        public SetGoalXCommand(double goalX, IPacketDescription packetDescription)
         {
             int x =(int) (goalX * 100);
 
-            while (0 != x)
-            {
-                Content += (x % 10).ToString();
-                x /= 10;
-            }
-
-            char[] contentCharArray = Content.ToCharArray();
-            Array.Reverse(contentCharArray);
             Content = packetDescription.PacketStart + "X" +
-            new string(contentCharArray) + packetDescription.PacketEnd;
+            goalX + packetDescription.PacketEnd;
         }
 
         public void Execute(IConnector connection)

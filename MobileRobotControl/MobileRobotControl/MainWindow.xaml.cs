@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,6 +14,7 @@ using MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.RecP
 using MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.StatusUpdateRequest;
 using MobileRobotControl.Components.RobotControl;
 using MobileRobotControl.Components.RobotDataPresenters;
+using MobileRobotControl.Windows;
 
 namespace MobileRobotControl
 {
@@ -30,11 +32,17 @@ namespace MobileRobotControl
         
         delegate void UpdatePosDelegate(double value);
         private UpdatePosDelegate _posUpdateDelegate;
+
+        delegate void UpdateWithIntDelegate(int value);
+        private UpdateWithIntDelegate _intUpdateDelegate;
         private object _delObject;
 
         delegate void UpdateEngDelegate(int lEngine, int rEngine);
         private UpdateEngDelegate _engUpdateDelegate;
         private object[] _delObjects = new object[2];
+
+        delegate void UpdateWithVoidDelegate();
+        private UpdateWithVoidDelegate _updateVoidDelegate;
 
         private IRobotCommand _robotCommand;
         private SimpleRobotControl _robotControl;
@@ -60,6 +68,7 @@ namespace MobileRobotControl
             RobotControlDockPanel.Children.Remove(ManualControlGrid);
             RobotControlDockPanel.Children.Remove(PointFollowGrid);
             RobotControlDockPanel.Children.Remove(RobotSettingsGrid);
+            RobotControlDockPanel.Children.Remove(LineFollowGrid);
             _currentlyDisplayedGrid = MainGrid;
             _robotControl = new SimpleRobotControl();
             RobotSpeedSlider.Focusable = false;
@@ -181,6 +190,76 @@ namespace MobileRobotControl
             }
         }
 
+        public void UpdateNearestWeight(double value)
+        {
+            if (NearestSensorWeightTextBox.Dispatcher.CheckAccess())
+            {
+                NearestSensorWeightTextBox.Text = value.ToString("0.000");
+            }
+            else
+            {
+                _delObject = value;
+                _posUpdateDelegate = UpdateNearestWeight;
+                Dispatcher.BeginInvoke(_posUpdateDelegate, _delObject);
+            }
+        }
+
+        public void UpdateMiddleWeight(double value)
+        {
+            if (MiddleSensorWeightTextBox.Dispatcher.CheckAccess())
+            {
+                MiddleSensorWeightTextBox.Text = value.ToString("0.000");
+            }
+            else
+            {
+                _delObject = value;
+                _posUpdateDelegate = UpdateMiddleWeight;
+                Dispatcher.BeginInvoke(_posUpdateDelegate, _delObject);
+            }
+        }
+
+        public void UpdateFahrtestWeight(double value)
+        {
+            if (FarthestSensorWeightTextBox.Dispatcher.CheckAccess())
+            {
+                FarthestSensorWeightTextBox.Text = value.ToString("0.000");
+            }
+            else
+            {
+                _delObject = value;
+                _posUpdateDelegate = UpdateFahrtestWeight;
+                Dispatcher.BeginInvoke(_posUpdateDelegate, _delObject);
+            }
+        }
+
+        public void UpdateFollowerKp(double value)
+        {
+            if (KPTextBox.Dispatcher.CheckAccess())
+            {
+                KPTextBox.Text = value.ToString("0.000");
+            }
+            else
+            {
+                _delObject = value;
+                _posUpdateDelegate = UpdateFollowerKp;
+                Dispatcher.BeginInvoke(_posUpdateDelegate, _delObject);
+            }
+        }
+
+        public void UpdateFollowerTp(int value)
+        {
+            if (TPTextBox.Dispatcher.CheckAccess())
+            {
+                TPTextBox.Text = value.ToString();
+            }
+            else
+            {
+                _delObject = value;
+                _intUpdateDelegate = UpdateFollowerTp;
+                Dispatcher.BeginInvoke(_intUpdateDelegate, _delObject);
+            }
+        }
+
         public void UpdateEngines(int lEngine, int rEngine)
         {
             if (leftEngineProgressBar.Dispatcher.CheckAccess())
@@ -196,7 +275,26 @@ namespace MobileRobotControl
                 Dispatcher.BeginInvoke(_engUpdateDelegate, _delObjects);
             }
         }
-#endregion
+
+        public void SetFollowingLineOK()
+        {
+            if (StartLinneFolowingButton.Dispatcher.CheckAccess())
+            {
+                StartLinneFolowingButton.Content = "Stop";
+            }
+            else
+            {
+                _updateVoidDelegate = SetFollowingLineOK;
+                Dispatcher.BeginInvoke(_updateVoidDelegate);
+            }
+        }
+
+        public void SetFollowingPointOK()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
 
         private void SetXButton_Click(object sender, RoutedEventArgs e)
         {
@@ -205,12 +303,15 @@ namespace MobileRobotControl
             _robotCommand.Execute(_rs232);
         }
 
+#region MainGrid
+
         private async void ManualControlButton_Click(object sender, RoutedEventArgs e)
         {
             await SwapGridFromTop(ManualControlGrid);
             _isManualControl = true;
         }
-        private async void RobotSettingsButton1_Click(object sender, RoutedEventArgs e)
+
+        private async void RobotSettingsButton_Click(object sender, RoutedEventArgs e)
         {
             await SwapGridFromBot(RobotSettingsGrid);
 
@@ -218,10 +319,78 @@ namespace MobileRobotControl
             PositionYTextBox.Text = "0";
             AngleTextBox.Text = "90";
 
-            await Task.Delay(100);
             _robotCommand = new GetBaseParametersCommand(_packetDescription);
-            _robotCommand.Execute(_rs232);
+            await SendRobotCommand(_robotCommand);
         }
+
+        private async void PointFollowButton_Click(object sender, RoutedEventArgs e)
+        {
+            await SwapGridFromBot(PointFollowGrid);
+            _isManualControl = false;
+        }
+
+        private async void LineFollowButton_Click(object sender, RoutedEventArgs e)
+        {
+            await SwapGridFromTop(LineFollowGrid);
+
+            List<IRobotCommand> robotCommands = new List<IRobotCommand>
+            {
+                new GetSensorWeightsCommand(_packetDescription),
+                new GetLfParametersCommand(_packetDescription)
+            };
+
+            await SendRobotCommand(robotCommands);
+        }
+
+#endregion
+
+        private async Task SendRobotCommand(List<IRobotCommand> commandsList)
+        {
+            try
+            {
+                foreach (IRobotCommand command in commandsList)
+                {
+                    await Task.Delay(200);
+                    command.Execute(_rs232);
+                }
+            }
+            catch (Exception e)
+            {
+                WarningWindow ww = new WarningWindow("Not connected!") {Owner = this};
+                ww.ShowDialog();
+            }
+        }
+
+        private async Task SendRobotCommand(IRobotCommand command)
+        {
+            await Task.Delay(200);
+            try
+            {
+                    command.Execute(_rs232);
+            }
+            catch (Exception e)
+            {
+                WarningWindow ww = new WarningWindow("Not connected!") { Owner = this };
+                ww.ShowDialog();
+            }
+        }
+
+#region GridClosersRegion
+
+        private async void BackToMainFromTopButton_Click(object sender, RoutedEventArgs e)
+        {
+            await SwapGridFromTop(MainGrid);
+            _isManualControl = false;
+        }
+
+        private async void BackToMainFromBotButton_Click(object sender, RoutedEventArgs e)
+        {
+            await SwapGridFromBot(MainGrid);
+            _isManualControl = false;
+        }
+
+#endregion
+
 
         private async Task SwapGridFromBot(Grid gridToDisplay)
         {
@@ -248,29 +417,6 @@ namespace MobileRobotControl
             _currentlyDisplayedGrid = gridToDisplay;
         }
 
-        private async void PointFollowButton1_Click(object sender, RoutedEventArgs e)
-        {
-            await SwapGridFromBot(PointFollowGrid);
-            _isManualControl = false;
-        }
-
-        private async void BackToMainButton_Click(object sender, RoutedEventArgs e)
-        {
-            await SwapGridFromTop(MainGrid);
-            _isManualControl = false;
-        }
-
-        private async void BackToMainButton1_Click(object sender, RoutedEventArgs e)
-        {
-            await SwapGridFromBot(MainGrid);
-            _isManualControl = false;
-        }
-
-        private async void BackToMainButton2_Click(object sender, RoutedEventArgs e)
-        {
-            await SwapGridFromTop(MainGrid);
-        }
-
         private async void SetRobotSettingsButton_Click(object sender, RoutedEventArgs e)
         {
             double x, y, angle, wheelSize, wheelSpacing;
@@ -284,19 +430,55 @@ namespace MobileRobotControl
             }
             catch (Exception)
             {
-                MessageBox.Show("Wrong position parameters");
+                WarningWindow ww = new WarningWindow("Wrong parameters!") {Owner = this};
+                ww.ShowDialog();
                 return;
             }
 
-            await Task.Delay(100);
-            _robotCommand = new SetRobotPositionCommand(x, y, angle, _packetDescription);
-            _robotCommand.Execute(_rs232);
-            await Task.Delay(200);
-            _robotCommand = new SetBaseParametersCommand(wheelSize, wheelSpacing, _packetDescription);
-            _robotCommand.Execute(_rs232);
-            await Task.Delay(200);
-            _robotCommand = new GetBaseParametersCommand(_packetDescription);
-            _robotCommand.Execute(_rs232);
+            var robotCommands = new List<IRobotCommand>
+            {
+                new SetRobotPositionCommand(x, y, angle, _packetDescription),
+                new SetBaseParametersCommand(wheelSize, wheelSpacing, _packetDescription),
+                new GetBaseParametersCommand(_packetDescription)
+            };
+            await SendRobotCommand(robotCommands);
+
+        }
+        private async void StartLinneFolowingButton_Click(object sender, RoutedEventArgs e)
+        {
+            if ((string) StartLinneFolowingButton.Content == "Start")
+            {
+                double near, mid, fahrt, kp;
+                int tp;
+                try
+                {
+                    near = Convert.ToDouble(NearestSensorWeightTextBox.Text);
+                    mid = Convert.ToDouble(MiddleSensorWeightTextBox.Text);
+                    fahrt = Convert.ToDouble(FarthestSensorWeightTextBox.Text);
+                    tp = Convert.ToInt32(TPTextBox.Text);
+                    kp = Convert.ToDouble(KPTextBox.Text);
+                }
+                catch (Exception)
+                {
+                    WarningWindow ww = new WarningWindow("Wrong parameters!"){Owner = this};
+                    ww.ShowDialog();
+                    return;
+                }
+
+                List<IRobotCommand> commands = new List<IRobotCommand>
+                {
+                    new SetLineFollowerParametersCommand(kp, tp, _packetDescription),
+                    new SetReflectiveSensorWeights(near, mid, fahrt, _packetDescription),
+                    new GetLfParametersCommand(_packetDescription),
+                    new GetSensorWeightsCommand(_packetDescription)
+                };
+                await SendRobotCommand(commands);
+            }
+            else
+            {
+                
+            }
+            
         }
 
         private async Task SwapGridFromTop(Grid gridToDisplay)
@@ -428,16 +610,6 @@ namespace MobileRobotControl
             ADownImage.Source = _adown_False;
             ARightImage.Source = _aright_False;
         }
-
-
-
-
-
-
-
-
-
-
 
 
 

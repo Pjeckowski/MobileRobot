@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 D:\Projects\inzynierka\MobileRobot\MobileRobotControl\MobileRobotControl\App.xaml
-2-1990524587
+3-1848750873
 
-37-100851718
+49326248542
 12-1401562060
-MainWindow.xaml;Windows\Connection_Window.xaml;
+MainWindow.xaml;Windows\Connection_Window.xaml;Windows\WarningWindow.xaml;
 
 False
 

@@ -15,7 +15,7 @@
 #include <util/atomic.h>
 #include "uart\my_uart.h"
 #include "robot\protocol.h"
-
+#include "rfSensor\rfSensor.h"
 
 #define CONT_LED PB0
 #define LED_PORT PORTB
@@ -47,7 +47,10 @@ volatile uint8_t radioResetTimer = 0;
 //robot control
 int lEngineFill = 0, rEngineFill = 0;
 int aLEngineFill = 0, aREngineFill = 0;
-uint8_t isFollowingPoint = 0, isFollowingLine = 0, maxEngineFill = 0;
+uint8_t isFollowingPoint = 0, isFollowingLine = 1, maxEngineFill = 0;
+
+//lineFollowerVariables
+
 
 //counters etc.
 volatile uint8_t irCounter, engCounter, wasInterrupt, wasOverflow;
@@ -65,6 +68,7 @@ volatile double angleDiff = 0, robotSpeed = 0;
 float angleDiffPart, robotSpeedPart;
 volatile int rightEngSteps = 0, leftEngSteps = 0;
 volatile int rightEngStepsC = 0, leftEngStepsC = 0;
+
 int n = 3;
 
 inline void CalculatePosition()
@@ -128,6 +132,10 @@ int main()
 	TIMSK |= (1 << TOIE0);
 	SetINT0INT1risingEdgeInterrupt();
 
+	_delay_ms(100);
+	ReflectiveSensor leftRS = refSensor_Init(1, 2, 3, 750);
+	//rightRS = refSensor_Init(2, 1, 0, 750);
+
 	_delay_ms(200);
 	radio_StartListenning();
 
@@ -139,6 +147,17 @@ int main()
 		SetEngines();
 		SetRadioStateReset();
 		CalculatePosition();
+		if(isFollowingLine)
+		{
+			if(refSensor_AreValuesReady(&leftRS))
+			{
+				refSensor_Clean(&leftRS);
+					if(leftRS.rsValues.LeftIn)
+						ledON();
+					else
+						ledON();
+			}
+		}
     }
 }
 
@@ -147,12 +166,12 @@ ISR(INT0_vect)
 	if(engine_IsEng1RotatingBack())
 	{
 		rightEngSteps--;
-		ledON();
+		//ledON();
 	}
 	else
 	{
 		rightEngSteps++;
-		ledOFF();
+		//ledOFF();
 	}
 }
 

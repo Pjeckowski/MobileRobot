@@ -53,6 +53,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\SetFollowingPointStatusOk.cs" />
+    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\SetFollowingLineStatusOk.cs" />
+    <Compile Include="Windows\WarningWindow.xaml.cs">
+      <DependentUpon>WarningWindow.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -67,9 +72,18 @@
     </Compile>
     <Compile Include="Components\Connection\IConnector.cs" />
     <Compile Include="Components\Connection\RS232.cs" />
-    <Compile Include="Components\RobotCommunication\RobotCommands\GetBaseParametersCommand.cs" />
+    <Compile Include="Components\RobotCommunication\RobotCommands\GetLfParametersCommand.cs" />
+    <Compile Include="Components\RobotCommunication\RobotCommands\GetSensorWeightsCommand.cs" />
     <Compile Include="Components\RobotCommunication\RobotCommands\SetBaseParametersCommand.cs" />
+    <Compile Include="Components\RobotCommunication\RobotCommands\SetReflectiveSensorWeights.cs" />
+    <Compile Include="Components\RobotCommunication\RobotCommands\GetBaseParametersCommand.cs" />
+    <Compile Include="Components\RobotCommunication\RobotCommands\SetLineFollowerParametersCommand.cs" />
     <Compile Include="Components\RobotCommunication\RobotCommands\SetRobotPositionCommand.cs" />
+    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\AngleUpdate.cs" />
+    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\FollowerKpUpdate.cs" />
+    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\FarthestWeightUpdate.cs" />
+    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\NearestWeightUpdate.cs" />
+    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\MiddleWeightUpdate.cs" />
     <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\WSpacingUpdate.cs" />
     <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\WSizeUpdate.cs" />
     <Compile Include="Components\RobotControl\EnginesFill.cs" />
@@ -94,7 +108,7 @@
     <Compile Include="Components\RobotCommunication\RobotReceivedPackets\RecPacketHeaders.cs" />
     <Compile Include="Components\RobotCommunication\RobotReceivedPackets\RecPacketSplitters\RecPacketSplitter.cs" />
     <Compile Include="Components\RobotCommunication\RobotReceivedPackets\RecRobotPacket.cs" />
-    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\AngleUpdate.cs" />
+    <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\FollowerTpUpdate.cs" />
     <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\EngineFillUpdate.cs" />
     <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\IRobotStatusUpdate.cs" />
     <Compile Include="Components\RobotCommunication\RobotReceivedPackets\StatusUpdateRequest\RobotStatusUpdateFactory.cs" />
@@ -104,6 +118,10 @@
       <DependentUpon>Windows\Connection_Window.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Windows\WarningWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

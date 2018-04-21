@@ -40,3 +40,5 @@ D:\Projects\inzynierka\MobileRobot\MobileRobotControl\MobileRobotControl\obj\Deb
 D:\Projects\inzynierka\MobileRobot\MobileRobotControl\MobileRobotControl\obj\Debug\MobileRobotControl.exe
 D:\Projects\inzynierka\MobileRobot\MobileRobotControl\MobileRobotControl\obj\Debug\MobileRobotControl.pdb
 D:\Projects\inzynierka\MobileRobot\MobileRobotControl\MobileRobotControl\obj\Debug\MobileRobotControl.csprojResolveAssemblyReference.cache
+D:\Projects\inzynierka\MobileRobot\MobileRobotControl\MobileRobotControl\obj\Debug\Windows\WarningWindow.baml
+D:\Projects\inzynierka\MobileRobot\MobileRobotControl\MobileRobotControl\obj\Debug\Windows\WarningWindow.g.cs

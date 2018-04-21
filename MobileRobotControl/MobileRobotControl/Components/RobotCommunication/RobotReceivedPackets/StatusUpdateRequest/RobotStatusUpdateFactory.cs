@@ -32,6 +32,34 @@ namespace MobileRobotControl.Components.RobotCommunication.RobotReceivedPackets.
                 {
                     return new WSpacingUpdate(packet.Content);
                 }
+                case RecPacketHeaders.WeightFahrtestUpdate:
+                {
+                    return new FarthestWeightUpdate(packet.Content);
+                }
+                case RecPacketHeaders.WeightMiddleUpdate:
+                {
+                    return new MiddleWeightUpdate(packet.Content);
+                }
+                case RecPacketHeaders.WeightNearestUpdate:
+                {
+                    return new NearestWeightUpdate(packet.Content);
+                }
+                case RecPacketHeaders.FollowerKPUpdate:
+                {
+                    return new FollowerKpUpdate(packet.Content);
+                }
+                case RecPacketHeaders.FollowerTPUpdate:
+                {
+                    return new FollowerTpUpdate(packet.Content);
+                }
+                case RecPacketHeaders.FollowingLineOKUpdate:
+                {
+                    return new SetFollowingLineStatusOk();
+                }
+                case RecPacketHeaders.FollowingPointOKUpdate:
+                {
+                    return new SetFollowingPointStatusOk();
+                }
                 default:
                 {
                     throw new ArgumentException("Unrecognized packet header.");

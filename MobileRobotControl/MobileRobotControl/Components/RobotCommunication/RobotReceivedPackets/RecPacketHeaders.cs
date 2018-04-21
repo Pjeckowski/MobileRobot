@@ -7,6 +7,13 @@
         AUpdate = 'A',
         EFUpdate = 'E',
         WSizeUpdate = 'W',
-        WSpacingUpdate = 'S'
+        WSpacingUpdate = 'S',
+        WeightNearestUpdate = 'N',
+        WeightMiddleUpdate = 'M',
+        WeightFahrtestUpdate = 'F',
+        FollowerKPUpdate = 'K',
+        FollowerTPUpdate = 'T',
+        FollowingPointOKUpdate = 'R',
+        FollowingLineOKUpdate = 'L'
     }
 }

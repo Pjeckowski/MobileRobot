@@ -18,7 +18,9 @@ ReflectiveSensor refSensor_Init(uint8_t leftPinNumber, uint8_t middlePinNumber, 
         .RightIn = rightPinNumber,
         .refSensorStatus = _RSCIDLE,
         .conValue = -1,
-        .rsValues = {.LeftIn = 0, .MiddleIn = 0, .RightIn = 0},
+        .leftVal = 0,
+		.rightVal = 0,
+		.midVal = 0,
         .isReady = 0,
         ._1edge = edge
     };
@@ -44,9 +46,9 @@ uint8_t refSensor_AreValuesReady(ReflectiveSensor *rS)
 			if(-1 != rS->conValue)
 			{
 				if(rS->conValue > rS->_1edge)
-					rS->rsValues.LeftIn = 1;
+					rS->leftVal = 1;
 				else
-					rS->rsValues.LeftIn = 0;
+					rS->leftVal = 0;
 
 				adc_StartConversion(rS->MiddleIn);
 				rS->refSensorStatus = _RSC1;
@@ -59,9 +61,9 @@ uint8_t refSensor_AreValuesReady(ReflectiveSensor *rS)
 			if(-1 != rS->conValue)
 			{
 				if(rS->conValue > rS->_1edge)
-					rS->rsValues.MiddleIn = 1;
+					rS->midVal = 1;
 				else
-					rS->rsValues.MiddleIn = 0;
+					rS->midVal = 0;
 
 				adc_StartConversion(rS->RightIn);
 				rS->refSensorStatus = _RSC2;
@@ -74,11 +76,10 @@ uint8_t refSensor_AreValuesReady(ReflectiveSensor *rS)
 			if(-1 != rS->conValue)
 			{
 				if(rS->conValue > rS->_1edge)
-					rS->rsValues.RightIn = 1;
+					rS->rightVal = 1;
 				else
-					rS->rsValues.RightIn = 0;
+					rS->rightVal = 0;
 
-				adc_StartConversion(rS->LeftIn);
 				rS->refSensorStatus = _RSCIDLE;
 			}
 			rS->isReady = 1;

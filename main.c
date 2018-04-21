@@ -4,18 +4,17 @@
  *  Created on: 8 mar 2017
  *      Author: Patryk
  */
-
-#include<avr/io.h>
-#include<util/delay.h>
-#include "source\nrf24l01\rf24l01.h"
-#include "source\robot\engine.h"
-#include "source\memops\memops.h"
-#include <stdlib.h>
 #include <Math.h>
+#include<avr/io.h>
+#include <stdlib.h>
+#include<util/delay.h>
 #include <util/atomic.h>
-#include "source\rfSensor/rfSensor.h"
-#include "source\uart\my_uart.h"
+#include "source\nrf24l01\rf24l01.h"
+#include "source\memops\memops.h"
+#include "source\rfSensor\rfSensor.h"
 #include "source\robot\protocol.h"
+#include "source\robot\engine.h"
+#include "source\regulatorP\regulatorP.h"
 
 #define CONT_LED PB0
 #define LED_PORT PORTB
@@ -25,7 +24,6 @@
 #define D_WIDTH 15
 
 //functions
-void SendInfo();
 void SetEngines();
 void RadioReceive();
 void SetRadioStateReset();
@@ -51,6 +49,7 @@ uint8_t isFollowingPoint = 0, isFollowingLine = 1, maxEngineFill = 0;
 
 //lineFollowerVariables
 ReflectiveSensor leftRS, rightRS;
+RegulatorParams regParams;
 
 //counters etc.
 volatile uint8_t irCounter, engCounter, wasInterrupt, wasOverflow;
@@ -133,8 +132,11 @@ int main()
 	SetINT0INT1risingEdgeInterrupt();
 
 	_delay_ms(100);
-	 leftRS = refSensor_Init(5, 4, 3, 750);
-	 rightRS = refSensor_Init(2, 1, 0, 750);
+	rightRS = refSensor_Init(2, 1, 0, 700);
+	leftRS = refSensor_Init(5, 4, 3, 700);
+	_delay_ms(100);
+
+	regParams = regulator_Init(1, 2, 4, 10, 40, PERIOD);
 
 	_delay_ms(200);
 	radio_StartListenning();
@@ -147,16 +149,31 @@ int main()
 		SetEngines();
 		//SetRadioStateReset();
 		CalculatePosition();
+
 		if(isFollowingLine)
 		{
 			if(refSensor_AreValuesReady(&leftRS))
-			{
-				refSensor_Clean(&leftRS);
-					if(leftRS.rsValues.LeftIn)
+				if(refSensor_AreValuesReady(&rightRS))
+				{
+					refSensor_Clean(&leftRS);
+					refSensor_Clean(&rightRS);
+
+					if(leftRS.leftVal)
 						ledON();
 					else
 						ledOFF();
-			}
+
+
+					//float error = regulator_GetError(leftRS.rsValues.LeftIn,
+					//		leftRS.rsValues.MiddleIn, leftRS.rsValues.RightIn,
+					//		rightRS.rsValues.LeftIn, rightRS.rsValues.MiddleIn,
+					//		rightRS.rsValues.RightIn, regParams);
+
+					//RegulatorWheelControl rWC = regulator_GetControl(error, regParams);
+
+					//lEngineFill = rWC.LeftWheel;
+					//rEngineFill = rWC.RightWheel;
+				}
 		}
     }
 }
@@ -375,12 +392,6 @@ void RadioReceive()
 }
 
 
-void SendInfo()
-{
-	uart_sendString("\tReceived!");
-	uart_sendByteAsChar(radioRecBufor[0]);
-}
-
 ///Function returns 1 if transmitter wants respond
 ///and 0 if it doesn't.
 ///If transmitter wants respond it also prepares the radioSendBuffor
@@ -450,15 +461,46 @@ uint8_t ProcessDataFromRadio(uint8_t* data)
 			wheelPerimeter = wheelSize * M_PI;
 			return 0;
 		}
+		case SETWE:
+		{
+			regParams.Nearest = getValFromBytes(data + 1);
+			regParams.Medium = getValFromBytes(data + 5);
+			regParams.Farthest = getValFromBytes(data + 9);
+			return 0;
+		}
+		case GETWE:
+		{
+			radioSendBufor[0] = GETWE;
+			getBytes(regParams.Nearest, radioSendBufor + 1);
+			getBytes(regParams.Medium, radioSendBufor + 5);
+			getBytes(regParams.Farthest, radioSendBufor + 9);
+			return 1;
+		}
+		case SETLF:
+		{
+			regParams.KP = getValFromBytes(data + 1);
+			regParams.TP = (int) getValFromBytes(data + 5);
+			return 0;
+		}
+		case GETLF:
+		{
+			radioSendBufor[0] = GETLF;
+			getBytes(regParams.KP, radioSendBufor + 1);
+			float ftp = regParams.TP;
+			getBytes(ftp, radioSendBufor + 5);
+			return 1;
+		}
 		case FOTOP:
 		{
 			isFollowingPoint = 1;
-			return 0;
+			radioSendBufor[0] = FOTOP;
+			return 1;
 		}
 		case FOLIN:
 		{
 			isFollowingLine = 1;
-			return 0;
+			radioSendBufor[0] = FOLIN;
+			return 1;
 		}
 		case SETME:
 		{

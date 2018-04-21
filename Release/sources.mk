@@ -23,5 +23,6 @@ C_DEPS :=
 SUBDIRS := \
 . \
 source/adc \
+source/regulatorP \
 source/rfSensor \
 

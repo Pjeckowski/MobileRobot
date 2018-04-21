@@ -11,6 +11,8 @@ static volatile uint8_t adcStatus = 0;
 
 void adc_Init(uint8_t ref, uint8_t prescaller)
 {
+	DDRA = 0;
+	PORTA = 0;
 	ADCSRA |= (1 << ADEN);
 	ADCSRA |= prescaller;
 	ADMUX |= ref;
@@ -19,7 +21,8 @@ void adc_Init(uint8_t ref, uint8_t prescaller)
 
 void adc_StartConversion(uint8_t input)
 {
-	ADMUX = (ADMUX & 0b11111000) | input;
+
+	ADMUX = (ADMUX & 0b11100000) | input;
 	ADCSRA |= (1 << ADSC);
 	adcStatus = ADC_STARTED;
 }

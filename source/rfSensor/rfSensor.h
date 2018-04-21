@@ -28,7 +28,9 @@ typedef struct ReflectiveSensor
 	uint8_t RightIn;
 	uint8_t refSensorStatus;
 	int conValue;
-	ReflectiveSensorValues rsValues;
+	uint8_t leftVal;
+	uint8_t rightVal;
+	uint8_t midVal;
 	uint8_t isReady;
 	uint16_t _1edge;
 }ReflectiveSensor;
